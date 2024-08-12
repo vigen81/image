@@ -1,0 +1,21 @@
+version: '3.7'
+
+services:
+    imaginary:
+      image: h2non/imaginary:latest
+      # optionally mount a volume as local image source
+      volumes:
+        - ./images:/mnt/data
+      environment:
+        PORT: 9000
+      command: -enable-url-source -mount /mnt/data
+      ports:
+        - "9000:9000"
+    postgres:
+      image: postgres:latest
+      environment:
+        POSTGRES_USER: root
+        POSTGRES_PASSWORD: 123456!
+        POSTGRES_DB: imagix
+      ports:
+          - "5432:5432"
