@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/Phoenix365-tech/imagix/internal/service/broker"
 	"github.com/Phoenix365-tech/imagix/internal/service/db"
 	"github.com/Phoenix365-tech/imagix/internal/web/route"
 	"github.com/joho/godotenv"
@@ -33,6 +34,10 @@ func main() {
 		micro.Server(srv),
 		micro.BeforeStart(func() error {
 			_, err := db.Open()
+			if err != nil {
+				return err
+			}
+			err = broker.Consume()
 			if err != nil {
 				return err
 			}

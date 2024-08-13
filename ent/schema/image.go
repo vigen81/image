@@ -4,6 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/mixin"
+	"github.com/Phoenix365-tech/imagix/internal/service/processor"
 )
 
 // Image holds the schema definition for the Image entity.
@@ -16,12 +17,14 @@ func (Image) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("uuid").Unique(),
 		field.String("url").Optional(),
+		field.String("object_id").Optional(),
 		field.String("tmp_url"),
 		field.String("service").Optional(),
 		field.String("type").Optional(),
 		field.Bool("is_proceed").Default(false),
 		field.Bool("is_deleted").Default(false),
 		field.String("content_type"),
+		field.JSON("size", processor.Size{}).Optional(),
 	}
 }
 

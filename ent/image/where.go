@@ -74,6 +74,11 @@ func URL(v string) predicate.Image {
 	return predicate.Image(sql.FieldEQ(FieldURL, v))
 }
 
+// ObjectID applies equality check predicate on the "object_id" field. It's identical to ObjectIDEQ.
+func ObjectID(v string) predicate.Image {
+	return predicate.Image(sql.FieldEQ(FieldObjectID, v))
+}
+
 // TmpURL applies equality check predicate on the "tmp_url" field. It's identical to TmpURLEQ.
 func TmpURL(v string) predicate.Image {
 	return predicate.Image(sql.FieldEQ(FieldTmpURL, v))
@@ -322,6 +327,81 @@ func URLEqualFold(v string) predicate.Image {
 // URLContainsFold applies the ContainsFold predicate on the "url" field.
 func URLContainsFold(v string) predicate.Image {
 	return predicate.Image(sql.FieldContainsFold(FieldURL, v))
+}
+
+// ObjectIDEQ applies the EQ predicate on the "object_id" field.
+func ObjectIDEQ(v string) predicate.Image {
+	return predicate.Image(sql.FieldEQ(FieldObjectID, v))
+}
+
+// ObjectIDNEQ applies the NEQ predicate on the "object_id" field.
+func ObjectIDNEQ(v string) predicate.Image {
+	return predicate.Image(sql.FieldNEQ(FieldObjectID, v))
+}
+
+// ObjectIDIn applies the In predicate on the "object_id" field.
+func ObjectIDIn(vs ...string) predicate.Image {
+	return predicate.Image(sql.FieldIn(FieldObjectID, vs...))
+}
+
+// ObjectIDNotIn applies the NotIn predicate on the "object_id" field.
+func ObjectIDNotIn(vs ...string) predicate.Image {
+	return predicate.Image(sql.FieldNotIn(FieldObjectID, vs...))
+}
+
+// ObjectIDGT applies the GT predicate on the "object_id" field.
+func ObjectIDGT(v string) predicate.Image {
+	return predicate.Image(sql.FieldGT(FieldObjectID, v))
+}
+
+// ObjectIDGTE applies the GTE predicate on the "object_id" field.
+func ObjectIDGTE(v string) predicate.Image {
+	return predicate.Image(sql.FieldGTE(FieldObjectID, v))
+}
+
+// ObjectIDLT applies the LT predicate on the "object_id" field.
+func ObjectIDLT(v string) predicate.Image {
+	return predicate.Image(sql.FieldLT(FieldObjectID, v))
+}
+
+// ObjectIDLTE applies the LTE predicate on the "object_id" field.
+func ObjectIDLTE(v string) predicate.Image {
+	return predicate.Image(sql.FieldLTE(FieldObjectID, v))
+}
+
+// ObjectIDContains applies the Contains predicate on the "object_id" field.
+func ObjectIDContains(v string) predicate.Image {
+	return predicate.Image(sql.FieldContains(FieldObjectID, v))
+}
+
+// ObjectIDHasPrefix applies the HasPrefix predicate on the "object_id" field.
+func ObjectIDHasPrefix(v string) predicate.Image {
+	return predicate.Image(sql.FieldHasPrefix(FieldObjectID, v))
+}
+
+// ObjectIDHasSuffix applies the HasSuffix predicate on the "object_id" field.
+func ObjectIDHasSuffix(v string) predicate.Image {
+	return predicate.Image(sql.FieldHasSuffix(FieldObjectID, v))
+}
+
+// ObjectIDIsNil applies the IsNil predicate on the "object_id" field.
+func ObjectIDIsNil() predicate.Image {
+	return predicate.Image(sql.FieldIsNull(FieldObjectID))
+}
+
+// ObjectIDNotNil applies the NotNil predicate on the "object_id" field.
+func ObjectIDNotNil() predicate.Image {
+	return predicate.Image(sql.FieldNotNull(FieldObjectID))
+}
+
+// ObjectIDEqualFold applies the EqualFold predicate on the "object_id" field.
+func ObjectIDEqualFold(v string) predicate.Image {
+	return predicate.Image(sql.FieldEqualFold(FieldObjectID, v))
+}
+
+// ObjectIDContainsFold applies the ContainsFold predicate on the "object_id" field.
+func ObjectIDContainsFold(v string) predicate.Image {
+	return predicate.Image(sql.FieldContainsFold(FieldObjectID, v))
 }
 
 // TmpURLEQ applies the EQ predicate on the "tmp_url" field.
@@ -622,6 +702,16 @@ func ContentTypeEqualFold(v string) predicate.Image {
 // ContentTypeContainsFold applies the ContainsFold predicate on the "content_type" field.
 func ContentTypeContainsFold(v string) predicate.Image {
 	return predicate.Image(sql.FieldContainsFold(FieldContentType, v))
+}
+
+// SizeIsNil applies the IsNil predicate on the "size" field.
+func SizeIsNil() predicate.Image {
+	return predicate.Image(sql.FieldIsNull(FieldSize))
+}
+
+// SizeNotNil applies the NotNil predicate on the "size" field.
+func SizeNotNil() predicate.Image {
+	return predicate.Image(sql.FieldNotNull(FieldSize))
 }
 
 // And groups predicates with the AND operator between them.

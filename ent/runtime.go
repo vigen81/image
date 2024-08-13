@@ -29,11 +29,11 @@ func init() {
 	// image.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	image.UpdateDefaultUpdateTime = imageDescUpdateTime.UpdateDefault.(func() time.Time)
 	// imageDescIsProceed is the schema descriptor for is_proceed field.
-	imageDescIsProceed := imageFields[5].Descriptor()
+	imageDescIsProceed := imageFields[6].Descriptor()
 	// image.DefaultIsProceed holds the default value on creation for the is_proceed field.
 	image.DefaultIsProceed = imageDescIsProceed.Default.(bool)
 	// imageDescIsDeleted is the schema descriptor for is_deleted field.
-	imageDescIsDeleted := imageFields[6].Descriptor()
+	imageDescIsDeleted := imageFields[7].Descriptor()
 	// image.DefaultIsDeleted holds the default value on creation for the is_deleted field.
 	image.DefaultIsDeleted = imageDescIsDeleted.Default.(bool)
 }

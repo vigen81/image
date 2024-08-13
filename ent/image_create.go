@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/Phoenix365-tech/imagix/ent/image"
+	"github.com/Phoenix365-tech/imagix/internal/service/processor"
 )
 
 // ImageCreate is the builder for creating a Image entity.
@@ -64,6 +65,20 @@ func (ic *ImageCreate) SetURL(s string) *ImageCreate {
 func (ic *ImageCreate) SetNillableURL(s *string) *ImageCreate {
 	if s != nil {
 		ic.SetURL(*s)
+	}
+	return ic
+}
+
+// SetObjectID sets the "object_id" field.
+func (ic *ImageCreate) SetObjectID(s string) *ImageCreate {
+	ic.mutation.SetObjectID(s)
+	return ic
+}
+
+// SetNillableObjectID sets the "object_id" field if the given value is not nil.
+func (ic *ImageCreate) SetNillableObjectID(s *string) *ImageCreate {
+	if s != nil {
+		ic.SetObjectID(*s)
 	}
 	return ic
 }
@@ -133,6 +148,20 @@ func (ic *ImageCreate) SetNillableIsDeleted(b *bool) *ImageCreate {
 // SetContentType sets the "content_type" field.
 func (ic *ImageCreate) SetContentType(s string) *ImageCreate {
 	ic.mutation.SetContentType(s)
+	return ic
+}
+
+// SetSize sets the "size" field.
+func (ic *ImageCreate) SetSize(pr processor.Size) *ImageCreate {
+	ic.mutation.SetSize(pr)
+	return ic
+}
+
+// SetNillableSize sets the "size" field if the given value is not nil.
+func (ic *ImageCreate) SetNillableSize(pr *processor.Size) *ImageCreate {
+	if pr != nil {
+		ic.SetSize(*pr)
+	}
 	return ic
 }
 
@@ -254,6 +283,10 @@ func (ic *ImageCreate) createSpec() (*Image, *sqlgraph.CreateSpec) {
 		_spec.SetField(image.FieldURL, field.TypeString, value)
 		_node.URL = value
 	}
+	if value, ok := ic.mutation.ObjectID(); ok {
+		_spec.SetField(image.FieldObjectID, field.TypeString, value)
+		_node.ObjectID = value
+	}
 	if value, ok := ic.mutation.TmpURL(); ok {
 		_spec.SetField(image.FieldTmpURL, field.TypeString, value)
 		_node.TmpURL = value
@@ -277,6 +310,10 @@ func (ic *ImageCreate) createSpec() (*Image, *sqlgraph.CreateSpec) {
 	if value, ok := ic.mutation.ContentType(); ok {
 		_spec.SetField(image.FieldContentType, field.TypeString, value)
 		_node.ContentType = value
+	}
+	if value, ok := ic.mutation.Size(); ok {
+		_spec.SetField(image.FieldSize, field.TypeJSON, value)
+		_node.Size = value
 	}
 	return _node, _spec
 }

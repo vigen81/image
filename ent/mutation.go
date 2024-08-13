@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/Phoenix365-tech/imagix/ent/image"
 	"github.com/Phoenix365-tech/imagix/ent/predicate"
+	"github.com/Phoenix365-tech/imagix/internal/service/processor"
 )
 
 const (
@@ -37,12 +38,14 @@ type ImageMutation struct {
 	update_time   *time.Time
 	uuid          *string
 	url           *string
+	object_id     *string
 	tmp_url       *string
 	service       *string
 	_type         *string
 	is_proceed    *bool
 	is_deleted    *bool
 	content_type  *string
+	size          *processor.Size
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Image, error)
@@ -304,6 +307,55 @@ func (m *ImageMutation) ResetURL() {
 	delete(m.clearedFields, image.FieldURL)
 }
 
+// SetObjectID sets the "object_id" field.
+func (m *ImageMutation) SetObjectID(s string) {
+	m.object_id = &s
+}
+
+// ObjectID returns the value of the "object_id" field in the mutation.
+func (m *ImageMutation) ObjectID() (r string, exists bool) {
+	v := m.object_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldObjectID returns the old "object_id" field's value of the Image entity.
+// If the Image object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ImageMutation) OldObjectID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldObjectID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldObjectID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldObjectID: %w", err)
+	}
+	return oldValue.ObjectID, nil
+}
+
+// ClearObjectID clears the value of the "object_id" field.
+func (m *ImageMutation) ClearObjectID() {
+	m.object_id = nil
+	m.clearedFields[image.FieldObjectID] = struct{}{}
+}
+
+// ObjectIDCleared returns if the "object_id" field was cleared in this mutation.
+func (m *ImageMutation) ObjectIDCleared() bool {
+	_, ok := m.clearedFields[image.FieldObjectID]
+	return ok
+}
+
+// ResetObjectID resets all changes to the "object_id" field.
+func (m *ImageMutation) ResetObjectID() {
+	m.object_id = nil
+	delete(m.clearedFields, image.FieldObjectID)
+}
+
 // SetTmpURL sets the "tmp_url" field.
 func (m *ImageMutation) SetTmpURL(s string) {
 	m.tmp_url = &s
@@ -546,6 +598,55 @@ func (m *ImageMutation) ResetContentType() {
 	m.content_type = nil
 }
 
+// SetSize sets the "size" field.
+func (m *ImageMutation) SetSize(pr processor.Size) {
+	m.size = &pr
+}
+
+// Size returns the value of the "size" field in the mutation.
+func (m *ImageMutation) Size() (r processor.Size, exists bool) {
+	v := m.size
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSize returns the old "size" field's value of the Image entity.
+// If the Image object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ImageMutation) OldSize(ctx context.Context) (v processor.Size, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSize is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSize requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSize: %w", err)
+	}
+	return oldValue.Size, nil
+}
+
+// ClearSize clears the value of the "size" field.
+func (m *ImageMutation) ClearSize() {
+	m.size = nil
+	m.clearedFields[image.FieldSize] = struct{}{}
+}
+
+// SizeCleared returns if the "size" field was cleared in this mutation.
+func (m *ImageMutation) SizeCleared() bool {
+	_, ok := m.clearedFields[image.FieldSize]
+	return ok
+}
+
+// ResetSize resets all changes to the "size" field.
+func (m *ImageMutation) ResetSize() {
+	m.size = nil
+	delete(m.clearedFields, image.FieldSize)
+}
+
 // Where appends a list predicates to the ImageMutation builder.
 func (m *ImageMutation) Where(ps ...predicate.Image) {
 	m.predicates = append(m.predicates, ps...)
@@ -580,7 +681,7 @@ func (m *ImageMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ImageMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 12)
 	if m.create_time != nil {
 		fields = append(fields, image.FieldCreateTime)
 	}
@@ -592,6 +693,9 @@ func (m *ImageMutation) Fields() []string {
 	}
 	if m.url != nil {
 		fields = append(fields, image.FieldURL)
+	}
+	if m.object_id != nil {
+		fields = append(fields, image.FieldObjectID)
 	}
 	if m.tmp_url != nil {
 		fields = append(fields, image.FieldTmpURL)
@@ -611,6 +715,9 @@ func (m *ImageMutation) Fields() []string {
 	if m.content_type != nil {
 		fields = append(fields, image.FieldContentType)
 	}
+	if m.size != nil {
+		fields = append(fields, image.FieldSize)
+	}
 	return fields
 }
 
@@ -627,6 +734,8 @@ func (m *ImageMutation) Field(name string) (ent.Value, bool) {
 		return m.UUID()
 	case image.FieldURL:
 		return m.URL()
+	case image.FieldObjectID:
+		return m.ObjectID()
 	case image.FieldTmpURL:
 		return m.TmpURL()
 	case image.FieldService:
@@ -639,6 +748,8 @@ func (m *ImageMutation) Field(name string) (ent.Value, bool) {
 		return m.IsDeleted()
 	case image.FieldContentType:
 		return m.ContentType()
+	case image.FieldSize:
+		return m.Size()
 	}
 	return nil, false
 }
@@ -656,6 +767,8 @@ func (m *ImageMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldUUID(ctx)
 	case image.FieldURL:
 		return m.OldURL(ctx)
+	case image.FieldObjectID:
+		return m.OldObjectID(ctx)
 	case image.FieldTmpURL:
 		return m.OldTmpURL(ctx)
 	case image.FieldService:
@@ -668,6 +781,8 @@ func (m *ImageMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldIsDeleted(ctx)
 	case image.FieldContentType:
 		return m.OldContentType(ctx)
+	case image.FieldSize:
+		return m.OldSize(ctx)
 	}
 	return nil, fmt.Errorf("unknown Image field %s", name)
 }
@@ -704,6 +819,13 @@ func (m *ImageMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetURL(v)
+		return nil
+	case image.FieldObjectID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetObjectID(v)
 		return nil
 	case image.FieldTmpURL:
 		v, ok := value.(string)
@@ -747,6 +869,13 @@ func (m *ImageMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetContentType(v)
 		return nil
+	case image.FieldSize:
+		v, ok := value.(processor.Size)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSize(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Image field %s", name)
 }
@@ -780,11 +909,17 @@ func (m *ImageMutation) ClearedFields() []string {
 	if m.FieldCleared(image.FieldURL) {
 		fields = append(fields, image.FieldURL)
 	}
+	if m.FieldCleared(image.FieldObjectID) {
+		fields = append(fields, image.FieldObjectID)
+	}
 	if m.FieldCleared(image.FieldService) {
 		fields = append(fields, image.FieldService)
 	}
 	if m.FieldCleared(image.FieldType) {
 		fields = append(fields, image.FieldType)
+	}
+	if m.FieldCleared(image.FieldSize) {
+		fields = append(fields, image.FieldSize)
 	}
 	return fields
 }
@@ -803,11 +938,17 @@ func (m *ImageMutation) ClearField(name string) error {
 	case image.FieldURL:
 		m.ClearURL()
 		return nil
+	case image.FieldObjectID:
+		m.ClearObjectID()
+		return nil
 	case image.FieldService:
 		m.ClearService()
 		return nil
 	case image.FieldType:
 		m.ClearType()
+		return nil
+	case image.FieldSize:
+		m.ClearSize()
 		return nil
 	}
 	return fmt.Errorf("unknown Image nullable field %s", name)
@@ -829,6 +970,9 @@ func (m *ImageMutation) ResetField(name string) error {
 	case image.FieldURL:
 		m.ResetURL()
 		return nil
+	case image.FieldObjectID:
+		m.ResetObjectID()
+		return nil
 	case image.FieldTmpURL:
 		m.ResetTmpURL()
 		return nil
@@ -846,6 +990,9 @@ func (m *ImageMutation) ResetField(name string) error {
 		return nil
 	case image.FieldContentType:
 		m.ResetContentType()
+		return nil
+	case image.FieldSize:
+		m.ResetSize()
 		return nil
 	}
 	return fmt.Errorf("unknown Image field %s", name)

@@ -21,6 +21,8 @@ const (
 	FieldUUID = "uuid"
 	// FieldURL holds the string denoting the url field in the database.
 	FieldURL = "url"
+	// FieldObjectID holds the string denoting the object_id field in the database.
+	FieldObjectID = "object_id"
 	// FieldTmpURL holds the string denoting the tmp_url field in the database.
 	FieldTmpURL = "tmp_url"
 	// FieldService holds the string denoting the service field in the database.
@@ -33,6 +35,8 @@ const (
 	FieldIsDeleted = "is_deleted"
 	// FieldContentType holds the string denoting the content_type field in the database.
 	FieldContentType = "content_type"
+	// FieldSize holds the string denoting the size field in the database.
+	FieldSize = "size"
 	// Table holds the table name of the image in the database.
 	Table = "images"
 )
@@ -44,12 +48,14 @@ var Columns = []string{
 	FieldUpdateTime,
 	FieldUUID,
 	FieldURL,
+	FieldObjectID,
 	FieldTmpURL,
 	FieldService,
 	FieldType,
 	FieldIsProceed,
 	FieldIsDeleted,
 	FieldContentType,
+	FieldSize,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -101,6 +107,11 @@ func ByUUID(opts ...sql.OrderTermOption) OrderOption {
 // ByURL orders the results by the url field.
 func ByURL(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldURL, opts...).ToFunc()
+}
+
+// ByObjectID orders the results by the object_id field.
+func ByObjectID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldObjectID, opts...).ToFunc()
 }
 
 // ByTmpURL orders the results by the tmp_url field.

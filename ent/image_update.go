@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/Phoenix365-tech/imagix/ent/image"
 	"github.com/Phoenix365-tech/imagix/ent/predicate"
+	"github.com/Phoenix365-tech/imagix/internal/service/processor"
 )
 
 // ImageUpdate is the builder for updating Image entities.
@@ -65,6 +66,26 @@ func (iu *ImageUpdate) SetNillableURL(s *string) *ImageUpdate {
 // ClearURL clears the value of the "url" field.
 func (iu *ImageUpdate) ClearURL() *ImageUpdate {
 	iu.mutation.ClearURL()
+	return iu
+}
+
+// SetObjectID sets the "object_id" field.
+func (iu *ImageUpdate) SetObjectID(s string) *ImageUpdate {
+	iu.mutation.SetObjectID(s)
+	return iu
+}
+
+// SetNillableObjectID sets the "object_id" field if the given value is not nil.
+func (iu *ImageUpdate) SetNillableObjectID(s *string) *ImageUpdate {
+	if s != nil {
+		iu.SetObjectID(*s)
+	}
+	return iu
+}
+
+// ClearObjectID clears the value of the "object_id" field.
+func (iu *ImageUpdate) ClearObjectID() *ImageUpdate {
+	iu.mutation.ClearObjectID()
 	return iu
 }
 
@@ -164,6 +185,26 @@ func (iu *ImageUpdate) SetNillableContentType(s *string) *ImageUpdate {
 	return iu
 }
 
+// SetSize sets the "size" field.
+func (iu *ImageUpdate) SetSize(pr processor.Size) *ImageUpdate {
+	iu.mutation.SetSize(pr)
+	return iu
+}
+
+// SetNillableSize sets the "size" field if the given value is not nil.
+func (iu *ImageUpdate) SetNillableSize(pr *processor.Size) *ImageUpdate {
+	if pr != nil {
+		iu.SetSize(*pr)
+	}
+	return iu
+}
+
+// ClearSize clears the value of the "size" field.
+func (iu *ImageUpdate) ClearSize() *ImageUpdate {
+	iu.mutation.ClearSize()
+	return iu
+}
+
 // Mutation returns the ImageMutation object of the builder.
 func (iu *ImageUpdate) Mutation() *ImageMutation {
 	return iu.mutation
@@ -226,6 +267,12 @@ func (iu *ImageUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if iu.mutation.URLCleared() {
 		_spec.ClearField(image.FieldURL, field.TypeString)
 	}
+	if value, ok := iu.mutation.ObjectID(); ok {
+		_spec.SetField(image.FieldObjectID, field.TypeString, value)
+	}
+	if iu.mutation.ObjectIDCleared() {
+		_spec.ClearField(image.FieldObjectID, field.TypeString)
+	}
 	if value, ok := iu.mutation.TmpURL(); ok {
 		_spec.SetField(image.FieldTmpURL, field.TypeString, value)
 	}
@@ -249,6 +296,12 @@ func (iu *ImageUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := iu.mutation.ContentType(); ok {
 		_spec.SetField(image.FieldContentType, field.TypeString, value)
+	}
+	if value, ok := iu.mutation.Size(); ok {
+		_spec.SetField(image.FieldSize, field.TypeJSON, value)
+	}
+	if iu.mutation.SizeCleared() {
+		_spec.ClearField(image.FieldSize, field.TypeJSON)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, iu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -307,6 +360,26 @@ func (iuo *ImageUpdateOne) SetNillableURL(s *string) *ImageUpdateOne {
 // ClearURL clears the value of the "url" field.
 func (iuo *ImageUpdateOne) ClearURL() *ImageUpdateOne {
 	iuo.mutation.ClearURL()
+	return iuo
+}
+
+// SetObjectID sets the "object_id" field.
+func (iuo *ImageUpdateOne) SetObjectID(s string) *ImageUpdateOne {
+	iuo.mutation.SetObjectID(s)
+	return iuo
+}
+
+// SetNillableObjectID sets the "object_id" field if the given value is not nil.
+func (iuo *ImageUpdateOne) SetNillableObjectID(s *string) *ImageUpdateOne {
+	if s != nil {
+		iuo.SetObjectID(*s)
+	}
+	return iuo
+}
+
+// ClearObjectID clears the value of the "object_id" field.
+func (iuo *ImageUpdateOne) ClearObjectID() *ImageUpdateOne {
+	iuo.mutation.ClearObjectID()
 	return iuo
 }
 
@@ -406,6 +479,26 @@ func (iuo *ImageUpdateOne) SetNillableContentType(s *string) *ImageUpdateOne {
 	return iuo
 }
 
+// SetSize sets the "size" field.
+func (iuo *ImageUpdateOne) SetSize(pr processor.Size) *ImageUpdateOne {
+	iuo.mutation.SetSize(pr)
+	return iuo
+}
+
+// SetNillableSize sets the "size" field if the given value is not nil.
+func (iuo *ImageUpdateOne) SetNillableSize(pr *processor.Size) *ImageUpdateOne {
+	if pr != nil {
+		iuo.SetSize(*pr)
+	}
+	return iuo
+}
+
+// ClearSize clears the value of the "size" field.
+func (iuo *ImageUpdateOne) ClearSize() *ImageUpdateOne {
+	iuo.mutation.ClearSize()
+	return iuo
+}
+
 // Mutation returns the ImageMutation object of the builder.
 func (iuo *ImageUpdateOne) Mutation() *ImageMutation {
 	return iuo.mutation
@@ -498,6 +591,12 @@ func (iuo *ImageUpdateOne) sqlSave(ctx context.Context) (_node *Image, err error
 	if iuo.mutation.URLCleared() {
 		_spec.ClearField(image.FieldURL, field.TypeString)
 	}
+	if value, ok := iuo.mutation.ObjectID(); ok {
+		_spec.SetField(image.FieldObjectID, field.TypeString, value)
+	}
+	if iuo.mutation.ObjectIDCleared() {
+		_spec.ClearField(image.FieldObjectID, field.TypeString)
+	}
 	if value, ok := iuo.mutation.TmpURL(); ok {
 		_spec.SetField(image.FieldTmpURL, field.TypeString, value)
 	}
@@ -521,6 +620,12 @@ func (iuo *ImageUpdateOne) sqlSave(ctx context.Context) (_node *Image, err error
 	}
 	if value, ok := iuo.mutation.ContentType(); ok {
 		_spec.SetField(image.FieldContentType, field.TypeString, value)
+	}
+	if value, ok := iuo.mutation.Size(); ok {
+		_spec.SetField(image.FieldSize, field.TypeJSON, value)
+	}
+	if iuo.mutation.SizeCleared() {
+		_spec.ClearField(image.FieldSize, field.TypeJSON)
 	}
 	_node = &Image{config: iuo.config}
 	_spec.Assign = _node.assignValues

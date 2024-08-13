@@ -15,12 +15,14 @@ var (
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "uuid", Type: field.TypeString, Unique: true},
 		{Name: "url", Type: field.TypeString, Nullable: true},
+		{Name: "object_id", Type: field.TypeString, Nullable: true},
 		{Name: "tmp_url", Type: field.TypeString},
 		{Name: "service", Type: field.TypeString, Nullable: true},
 		{Name: "type", Type: field.TypeString, Nullable: true},
 		{Name: "is_proceed", Type: field.TypeBool, Default: false},
 		{Name: "is_deleted", Type: field.TypeBool, Default: false},
 		{Name: "content_type", Type: field.TypeString},
+		{Name: "size", Type: field.TypeJSON, Nullable: true},
 	}
 	// ImagesTable holds the schema information for the "images" table.
 	ImagesTable = &schema.Table{

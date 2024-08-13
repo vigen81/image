@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -10,6 +11,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/Phoenix365-tech/imagix/ent/image"
+	"github.com/Phoenix365-tech/imagix/internal/service/processor"
 )
 
 // Image is the model entity for the Image schema.
@@ -25,6 +27,8 @@ type Image struct {
 	UUID string `json:"uuid,omitempty"`
 	// URL holds the value of the "url" field.
 	URL string `json:"url,omitempty"`
+	// ObjectID holds the value of the "object_id" field.
+	ObjectID string `json:"object_id,omitempty"`
 	// TmpURL holds the value of the "tmp_url" field.
 	TmpURL string `json:"tmp_url,omitempty"`
 	// Service holds the value of the "service" field.
@@ -36,7 +40,9 @@ type Image struct {
 	// IsDeleted holds the value of the "is_deleted" field.
 	IsDeleted bool `json:"is_deleted,omitempty"`
 	// ContentType holds the value of the "content_type" field.
-	ContentType  string `json:"content_type,omitempty"`
+	ContentType string `json:"content_type,omitempty"`
+	// Size holds the value of the "size" field.
+	Size         processor.Size `json:"size,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -45,11 +51,13 @@ func (*Image) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case image.FieldSize:
+			values[i] = new([]byte)
 		case image.FieldIsProceed, image.FieldIsDeleted:
 			values[i] = new(sql.NullBool)
 		case image.FieldID:
 			values[i] = new(sql.NullInt64)
-		case image.FieldUUID, image.FieldURL, image.FieldTmpURL, image.FieldService, image.FieldType, image.FieldContentType:
+		case image.FieldUUID, image.FieldURL, image.FieldObjectID, image.FieldTmpURL, image.FieldService, image.FieldType, image.FieldContentType:
 			values[i] = new(sql.NullString)
 		case image.FieldCreateTime, image.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
@@ -98,6 +106,12 @@ func (i *Image) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				i.URL = value.String
 			}
+		case image.FieldObjectID:
+			if value, ok := values[j].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field object_id", values[j])
+			} else if value.Valid {
+				i.ObjectID = value.String
+			}
 		case image.FieldTmpURL:
 			if value, ok := values[j].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field tmp_url", values[j])
@@ -133,6 +147,14 @@ func (i *Image) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field content_type", values[j])
 			} else if value.Valid {
 				i.ContentType = value.String
+			}
+		case image.FieldSize:
+			if value, ok := values[j].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field size", values[j])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &i.Size); err != nil {
+					return fmt.Errorf("unmarshal field size: %w", err)
+				}
 			}
 		default:
 			i.selectValues.Set(columns[j], values[j])
@@ -182,6 +204,9 @@ func (i *Image) String() string {
 	builder.WriteString("url=")
 	builder.WriteString(i.URL)
 	builder.WriteString(", ")
+	builder.WriteString("object_id=")
+	builder.WriteString(i.ObjectID)
+	builder.WriteString(", ")
 	builder.WriteString("tmp_url=")
 	builder.WriteString(i.TmpURL)
 	builder.WriteString(", ")
@@ -199,6 +224,9 @@ func (i *Image) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("content_type=")
 	builder.WriteString(i.ContentType)
+	builder.WriteString(", ")
+	builder.WriteString("size=")
+	builder.WriteString(fmt.Sprintf("%v", i.Size))
 	builder.WriteByte(')')
 	return builder.String()
 }

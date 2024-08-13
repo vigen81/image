@@ -7,9 +7,10 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/jszwec/s3fs"
+	"io"
 	"log"
-	"net/http"
 	"os"
+	"strings"
 	"sync"
 )
 
@@ -20,13 +21,13 @@ type FS struct {
 	ctx *s3.S3
 }
 
-func (fs *FS) Write(filename string, data []byte) error {
-
+func (fs *FS) Write(filename string, data []byte, contentType string) error {
+	filename = strings.Trim(filename, "/")
 	_, err := fs.ctx.PutObject(&s3.PutObjectInput{
 		Bucket:      aws.String(os.Getenv("AWS_BUCKET")),
 		Key:         aws.String(filename),
 		Body:        bytes.NewReader(data),
-		ContentType: aws.String(http.DetectContentType(data)),
+		ContentType: aws.String(contentType),
 	})
 	if err != nil {
 		return err
@@ -35,6 +36,7 @@ func (fs *FS) Write(filename string, data []byte) error {
 }
 
 func (fs *FS) Delete(filename string) error {
+	filename = strings.Trim(filename, "/")
 	_, err := fs.ctx.DeleteObject(&s3.DeleteObjectInput{
 		Bucket: aws.String(os.Getenv("AWS_BUCKET")),
 		Key:    aws.String(filename),
@@ -45,9 +47,23 @@ func (fs *FS) Delete(filename string) error {
 	return nil
 }
 
+func (fs *FS) Read(filename string) ([]byte, error) {
+	filename = strings.Trim(filename, "/")
+	f, err := fs.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	result, err := io.ReadAll(f)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+var fs *FS
+
 func Fs() *FS {
-	var fs *FS
-	fs = &FS{}
 	once.Do(func() {
 		var bucket = os.Getenv("AWS_BUCKET") // "bucket-name
 		s, err := session.NewSession(
@@ -59,9 +75,10 @@ func Fs() *FS {
 			log.Fatal(err)
 		}
 		ctx := s3.New(s)
-		fs.S3FS = s3fs.New(ctx, bucket)
-		fs.ctx = ctx
-
+		fs = &FS{
+			ctx:  ctx,
+			S3FS: s3fs.New(ctx, bucket),
+		}
 	})
 	return fs
 
