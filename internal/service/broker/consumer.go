@@ -37,7 +37,7 @@ func Consume() (err error) {
 	reader = kafka.NewReader(kafka.ReaderConfig{
 		Brokers:  []string{os.Getenv("KAFKA_BROKER")},
 		Dialer:   kafka.DefaultDialer,
-		Topic:    "imagix.process",
+		Topic:    os.Getenv("KAFKA_TOPIC"),
 		GroupID:  "main",
 		MaxBytes: 10e6, // 10MB
 	})
