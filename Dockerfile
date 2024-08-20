@@ -10,7 +10,7 @@ RUN apk --update --no-cache add ca-certificates gcc libtool make musl-dev protoc
 # Build Go binary
 COPY Makefile go.mod go.sum ./
 RUN go mod download
-COPY imagix .
+COPY . .
 RUN make deps
 RUN make build
 

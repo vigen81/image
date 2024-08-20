@@ -1,2 +1,5 @@
 .gitignore
 Dockerfile
+docker-compose.yaml
+.env
+.github
