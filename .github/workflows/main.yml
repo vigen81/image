@@ -1,0 +1,56 @@
+name: Docker Image CI
+run-name: Deploy to ${{ inputs.env || 'dev' }} by @${{ github.actor }}
+
+on:
+  push:
+    paths-ignore:
+      - .github/workflows/*.yaml
+
+  workflow_dispatch:
+    inputs:
+      env:
+        description: 'Environment to promote to'
+        required: true
+        type: choice
+        default: dev
+        options:
+          - dev
+          - test
+          - stage
+      tag:
+        description: "Tag to deploy"
+        required: false
+        type: string
+        default: ""
+
+
+env:
+  environment: ${{ github.event.inputs.env || 'dev' }}
+  tag: ${{ github.event.inputs.tag || '' }}
+
+jobs:
+
+  build-image:
+    runs-on: self-hosted
+    outputs:
+      image_tag: ${{ steps.docker-build.outputs.image_tag }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: build and upload to ecr
+        id: docker-build
+        uses: Phoenix365-tech/actions-wip/docker@main
+        with:
+          image_tag: ${{ env.tag }}
+
+  deploy:
+    needs: build-image
+    runs-on: self-hosted
+    steps:
+      - name: check promotion and run deploy for application
+        uses: Phoenix365-tech/actions-wip/deploy@main
+        with:
+          env: ${{ env.environment }}
+          image_tag: ${{ needs.build-image.outputs.image_tag }}
+          token: ${{ secrets.PHOENIX_ORG_TOKEN }}

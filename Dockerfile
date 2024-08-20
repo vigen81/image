@@ -9,14 +9,14 @@ RUN apk --update --no-cache add ca-certificates gcc libtool make musl-dev protoc
 
 # Build Go binary
 COPY Makefile go.mod go.sum ./
-RUN make init && go mod download 
+RUN go mod download
 COPY imagix .
-RUN make proto tidy build
+RUN make deps
+RUN make build
 
 # Deployment container
 FROM scratch
 
 COPY --from=builder /etc/ssl/certs /etc/ssl/certs
-COPY --from=builder /go/src/imagix/imagix /imagix
-ENTRYPOINT ["/imagix"]
-CMD []
+COPY --from=builder /go/src/imagix/app /app
+ENTRYPOINT ["/app"]
