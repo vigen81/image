@@ -23,8 +23,9 @@ type UploadResponse struct {
 }
 
 func routes(app *fiber.App) {
-
-	app.Post("/upload", Upload)
+	api := app.Group("/api")
+	v1 := api.Group("/v1")
+	v1.Post("/upload", Upload)
 
 }
 
