@@ -3,11 +3,13 @@ package main
 import (
 	"fmt"
 	"github.com/Phoenix365-tech/imagix/internal/env_os"
+	"github.com/Phoenix365-tech/imagix/internal/plugin/ams"
 	"github.com/Phoenix365-tech/imagix/internal/service/broker"
 	"github.com/Phoenix365-tech/imagix/internal/service/db"
 	"github.com/Phoenix365-tech/imagix/internal/web/route"
 	httpServer "github.com/micro/plugins/v5/server/http"
 	"go-micro.dev/v5"
+	"go-micro.dev/v5/config"
 	"go-micro.dev/v5/logger"
 	"go-micro.dev/v5/server"
 	"os"
@@ -20,28 +22,28 @@ var (
 
 func main() {
 	// Create service
-	//var cnf map[string]interface{}
+	var cnf map[string]interface{}
 	env_os.SetEnv(os.Getenv("PHOENIX365_ENVIRONMENT"))
 
-	//cgf, err := config.NewConfig()
+	cgf, err := config.NewConfig()
 
-	//if err != nil {
-	//	logger.Fatal(err.Error())
-	//}
+	if err != nil {
+		logger.Fatal(err.Error())
+	}
 
-	//cgf.Load(ams.NewSource(ams.WithSecretName(fmt.Sprintf("%s-eks-imagix", env_os.Env()))))
-	//
-	//if err := cgf.Scan(&cnf); err != nil {
-	//
-	//	logger.Fatal(err.Error())
-	//}
-	//for k, v := range cnf {
-	//	os.Setenv(k, fmt.Sprintf("%v", v))
-	//}
-	//
-	//if err != nil {
-	//	logger.Fatal(err.Error())
-	//}
+	cgf.Load(ams.NewSource(ams.WithSecretName(fmt.Sprintf("%s-eks-imagix", env_os.Env()))))
+
+	if err := cgf.Scan(&cnf); err != nil {
+
+		logger.Fatal(err.Error())
+	}
+	for k, v := range cnf {
+		os.Setenv(k, fmt.Sprintf("%v", v))
+	}
+
+	if err != nil {
+		logger.Fatal(err.Error())
+	}
 	srv := httpServer.NewServer(
 		server.Name(serviceName),
 		server.Address(fmt.Sprintf(":%d", 8080)),
