@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
+	"log"
 	"os"
 	"time"
 
@@ -30,8 +31,11 @@ type Source struct {
 
 func (s *Source) readFromAws() (*source.ChangeSet, error) {
 
-	cfg, err := config.NewEnvConfig()
+	config, err := config.NewEnvConfig()
 
+	if err != nil {
+		log.Fatal(err)
+	}
 	if err != nil {
 		return nil, err
 	}
