@@ -8,7 +8,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
-	"log"
 	"os"
 	"time"
 
@@ -30,18 +29,13 @@ type Source struct {
 }
 
 func (s *Source) readFromAws() (*source.ChangeSet, error) {
+	//key := os.Getenv("AWS_SECRET_KEY")
+	cfg, err := config.LoadDefaultConfig(context.TODO())
 
-	config, err := config.NewEnvConfig()
-
-	if err != nil {
-		log.Fatal(err)
-	}
 	if err != nil {
 		return nil, err
 	}
-
-	// Create Secrets Manager client
-	svc := secretsmanager.NewFromConfig(config)
+	svc := secretsmanager.NewFromConfig(cfg)
 
 	input := &secretsmanager.GetSecretValueInput{
 		SecretId:     aws.String(s.options.Context.Value(secretName{}).(string)),
@@ -50,21 +44,28 @@ func (s *Source) readFromAws() (*source.ChangeSet, error) {
 
 	result, err := svc.GetSecretValue(context.TODO(), input)
 	if err != nil {
-		// For a list of exceptions thrown, see
-		// https://<<{{DocsDomain}}>>/secretsmanager/latest/apireference/API_GetSecretValue.html
-		log.Fatal(err.Error())
+		return nil, err
 	}
 
 	// Decrypts secret using the associated KMS key.
 	var secretString string = *result.SecretString
+
+	cs := &source.ChangeSet{
+		Timestamp: time.Now(),
+		Format:    s.options.Encoder.String(),
+		Source:    s.String(),
+		Data:      []byte(secretString),
+	}
+	cs.Checksum = cs.Sum()
+	return cs, nil
 }
 
 func (s *Source) Read() (*source.ChangeSet, error) {
 	switch s.options.Context.Value(loadType{}).(LoadType) {
 	case AWS:
-		return readFromAws()
+		return s.readFromAws()
 	case File:
-		return readFromFile()
+		return s.readFromFile()
 	}
 	return nil, errors.New("invalid load type")
 }

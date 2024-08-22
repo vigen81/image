@@ -13,6 +13,7 @@ import (
 	"go-micro.dev/v5/logger"
 	"go-micro.dev/v5/server"
 	"os"
+	"strings"
 )
 
 var (
@@ -22,16 +23,23 @@ var (
 
 func main() {
 	// Create service
+
+	for _, e := range os.Environ() {
+		pair := strings.SplitN(e, "=", 2)
+		fmt.Println(pair[0])
+	}
 	var cnf map[string]interface{}
 	env_os.SetEnv(os.Getenv("PHOENIX365_ENVIRONMENT"))
-
 	cgf, err := config.NewConfig()
 
 	if err != nil {
 		logger.Fatal(err.Error())
 	}
 
-	cgf.Load(ams.NewSource(ams.WithSecretName(fmt.Sprintf("%s-eks-imagix", env_os.Env()))))
+	cgf.Load(ams.NewSource(
+		ams.WithSecretName(fmt.Sprintf("%s-eks-imagix", env_os.Env())),
+		ams.WithLoadType(ams.AWS),
+	))
 
 	if err := cgf.Scan(&cnf); err != nil {
 

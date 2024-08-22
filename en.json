@@ -1,0 +1,282 @@
+{
+  "betHistoryItem": {
+    "amountTitle": "Bet amount",
+    "editBetButton": "Edit bet",
+    "moreButton": "More",
+    "outcomeStatusTitle": "Status",
+    "payoutTitle": "Payout",
+    "possibleWinTitle": "Possible win"
+  },
+  "betInfoItem": {
+    "betAmountTitle": "Bet amount",
+    "payoutTitle": "Виплата"
+  },
+  "betStatuses": {
+    "ALL": "All Bets",
+    "LOSE": "Lose",
+    "VOID": "Void",
+    "WIN": "Win"
+  },
+  "betslipAcceptChangeModes": {
+    "NO": "Ask before coeficient changes",
+    "UP": "Accept if coeficient up",
+    "YES": "Accept under any coeficient changes"
+  },
+  "betslipAddBet": {
+    "eventIsSuspendSubtitle": "Please select another event or try again later",
+    "eventIsSuspendTitle": "This event is currently suspend"
+  },
+  "betslipEmptyState": {
+    "subtitle": "No bets selected! Please browse our sportsbook and select bets by tapping on the odds.",
+    "title": "Your bet slip is empty"
+  },
+  "betslipErrorMessages": {
+    "betPlaceErrorTitle": "Error while placing bet"
+  },
+  "betslipForm": {
+    "acceptAllChangesAndPlaceBetButton": "Accept all changes and place bet",
+    "depositButton": "Deposit",
+    "enterAmountButton": "Enter amount to bet",
+    "placeBetButton": "Place bet {0}",
+    "removeInactive": "Delete an inactive selection"
+  },
+  "betslipItemTemplate": {
+    "betAmountLabel": "Bet amount",
+    "maxBetButton": "Max bet",
+    "totalPossibleWinTitle": "Total possible win"
+  },
+  "betslipMultipleOdds": {
+    "amountLabel": "Amount",
+    "cleanBetslipButton": "Clean Betslip",
+    "maxBetButton": "Max bet",
+    "totalOddsTitle": "Total odds",
+    "totalPossibleWinTitle": "Total possible win"
+  },
+  "betslipMyBets": {
+    "shouldLoginSubtitle": "To view your bets, you must Sign in or Sign Up",
+    "shouldLoginTitle": "Your need to Sign In"
+  },
+  "betslipSuccessScreen": {
+    "betPlacedSuccessfullTitle": "Bet is placed successfully",
+    "okButton": "Ok",
+    "repeatBetButton": "Repeat bet"
+  },
+  "betslipTabs": {
+    "betslipTab": "Betslip",
+    "myBetsTab": "My Bets"
+  },
+  "casinoCategoryNavigation": {
+    "homeTitle": "Home",
+    "searchTitle": "Search"
+  },
+  "casinoGameList": {
+    "viewAllButton": "View All"
+  },
+  "expander": {
+    "showLessButton": "Show less",
+    "showMoreButton": "Показати все"
+  },
+  "footerAbout": {
+    "aboutTitle": "About Us",
+    "affiliatesTitle": "Affiliates",
+    "contactUsTitle": "Contact Us",
+    "promotionsTitle": "Promotions",
+    "title": "About"
+  },
+  "footerHelp": {
+    "amlKycPolicy": "AML\u0026KYC Policy",
+    "liveChatTitle": "Live Chat",
+    "responsibleGamingTitle": "Responsible Gaming",
+    "termsAndConditionsTitle": "Terms and Conditions",
+    "title": "Help"
+  },
+  "footerInformation": {
+    "bonusPolicyTitle": "Bonus Policy",
+    "privacyPolicyTitle": "Privacy Policy",
+    "rulesTitle": "Rules",
+    "title": "Information's"
+  },
+  "footerServices": {
+    "casinoTitle": "Casino",
+    "sportBettingTitle": "Sports betting",
+    "statisticTitle": "Statistics",
+    "title": "Services",
+    "tvGamesTitle": "TV Games"
+  },
+  "header": {
+    "depositButton": "Deposit",
+    "signUpButton": "Sign Up"
+  },
+  "historyBet": {
+    "noBetsSubtitle": "There are no bets yet",
+    "noBetsTitle": "No bets",
+    "title": "Bet History"
+  },
+  "historyPayment": {
+    "depositTabLabel": "Deposit",
+    "noPaymentsSubtitle": "There are no history yet",
+    "noPaymentsTitle": "No payments",
+    "title": "Payments history",
+    "withdrawalTabLabel": "Withdrawal"
+  },
+  "historySpins": {
+    "noSpinsSubtitle": "There are no history yet",
+    "noSpinsTitle": "No spins",
+    "title": "Spin history"
+  },
+  "leftSidebar": {
+    "popularEventsTitle": "Popular Events",
+    "sportsTitle": "Sports",
+    "topTournamentsTitle": "Top Tournaments"
+  },
+  "menuBanner": {
+    "alt": "Sign up banner",
+    "signUp": "Sign Up",
+    "title": "Sign Up and get bonus"
+  },
+  "menuHistory": {
+    "betHistoryTitle": "Bet history",
+    "paymentsHistoryTitle": "Payments history",
+    "spinsHistoryTitle": "Spins history",
+    "title": "History"
+  },
+  "menuInformation": {
+    "bonusPolicyTitle": "Bonus policy",
+    "privacyPolicyTitle": "Privacy policy",
+    "rulesTitle": "Rules",
+    "title": "Information"
+  },
+  "menuLogoutButton": {
+    "logout": "Logout"
+  },
+  "menuProduct": {
+    "casinoTitle": "Casino",
+    "liveTitle": "Live",
+    "sportTitle": "Sport",
+    "title": "Product"
+  },
+  "menuProfile": {
+    "depositTitle": "Deposit",
+    "infoTitle": "Info",
+    "title": "Profile",
+    "withdrawalTitle": "Withdrawal"
+  },
+  "mobileNav": {
+    "casinoTitle": "Casino",
+    "liveTitle": "Live",
+    "menuTitle": "Menu",
+    "sportTitle": "Sport"
+  },
+  "paymentFinalScreen": {
+    "goToCasinoButton": "Go to casino",
+    "goToSportsButton": "Go to sports",
+    "transactionHistoryButton": "Transactions history"
+  },
+  "paymentForm": {
+    "amountLabel": "Сума"
+  },
+  "profileDeposit": {
+    "maxAmountTitle": "Max amount",
+    "minAmountTitle": "Min amount",
+    "selectPaymentMethodTitle": "Select payment method",
+    "title": "Deposit"
+  },
+  "profileDepositDetails": {
+    "errorTitle": "Error title",
+    "maxAmountTitle": "Max amount",
+    "minAmountTitle": "Min amount",
+    "pendingSubtitle": "Please wait, deposit is being processed",
+    "pendingTitle": "Deposit pending",
+    "repeatDepositButton": "Repeat deposit",
+    "submitButton": "Deposit",
+    "successTitle": "Payment successfull!",
+    "title": "Deposit details"
+  },
+  "profileDropdown": {
+    "profileButton": "My profile"
+  },
+  "profileInfo": {
+    "birthDateLabel": "Birthday date (Optional)",
+    "countryLabel": "Country",
+    "currencyLabel": "Currency",
+    "emailLabel": "Email",
+    "firstNameLabel": "First name (Optional)",
+    "lastNameLabel": "Last name (Optional)",
+    "phoneLabel": "Phone (Optional)",
+    "saveButton": "Save",
+    "title": "Account Info"
+  },
+  "profileWithdrawal": {
+    "maxAmountTitle": "Max amount",
+    "minAmountTitle": "Min amount",
+    "selectPaymentMethodTitle": "Select payment method",
+    "title": "Withdrawal"
+  },
+  "profileWithdrawalDetails": {
+    "errorTitle": "Error title",
+    "maxAmountTitle": "Max amount",
+    "minAmountTitle": "Min amount",
+    "pendingSubtitle": "Please wait, withdrawal is being processed",
+    "pendingTitle": "Withdrawal pending",
+    "repeatWithdrawalButton": "Repeat withdrawal",
+    "submitButton": "Withdrawal",
+    "successTitle": "Withdrawal successfull!",
+    "title": "Withdrawal details"
+  },
+  "signIn": {
+    "dontHaveAccountTitle": "Don`t have account",
+    "emailLabel": "Email",
+    "forgotPasswordTitle": "Forgot password ?",
+    "passwordLabel": "Password",
+    "signInButton": "Sign In",
+    "signUpButton": "Sign Up",
+    "title": "Sign In"
+  },
+  "signUp": {
+    "birthDateLabel": "Birthday date (Optional)",
+    "byEmailButton": "Create account with Email",
+    "continueWithAppleButton": "Continue with Apple",
+    "continueWithFacebookButton": "Continue with Facebook",
+    "continueWithGoogleButton": "Continue with Google",
+    "countryLabel": "Country",
+    "createAccountButton": "Create account",
+    "currencyLabel": "Currency",
+    "emailLabel": "Email",
+    "errorTitle": "Account creation error",
+    "firstNameLabel": "First name (Optional)",
+    "lastNameLabel": "Last name (Optional)",
+    "orDivider": "or",
+    "passwordLabel": "Password",
+    "phoneLabel": "Phone (Optional)",
+    "repeatPasswordLabel": "Repeat password",
+    "successSubtitle": "Your account has been created",
+    "successTitle": "Success",
+    "title": "Sign Up"
+  },
+  "sportCompetitionFilterTimes": {
+    "all": "All",
+    "oneHourTitle": "1 h",
+    "threeHourTitle": "3 h",
+    "todayTitle": "Today",
+    "tomorrowTitle": "Tomorrow"
+  },
+  "sportCompetitionTabs": {
+    "allTitle": "All",
+    "topTitle": "Top Competitions"
+  },
+  "sportsbookEmpty": {
+    "subtitle": "Try to change settings or try again later",
+    "title": "No find any events"
+  },
+  "validationMessages": {
+    "confirmPasswordIsRequired": "Confirm password is required",
+    "countryIsRequired": "Country is required",
+    "currencyIsRequired": "Currency is required",
+    "emailIsIncorrect": "Email is incorrect",
+    "emailIsRequired": "Email is required",
+    "insuficientAmount": "insuficient amount",
+    "passwordDoesntMatch": "Passwords doesn`t match",
+    "passwordIsRequired": "Password is required",
+    "passwordMin": "Password must be at least 6 characters"
+  }
+}

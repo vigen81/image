@@ -1,0 +1,282 @@
+{
+  "betHistoryItem": {
+    "amountTitle": "Monto de la apuesta",
+    "editBetButton": "Editar apuesta",
+    "moreButton": "Más",
+    "outcomeStatusTitle": "Estado",
+    "payoutTitle": "Pago",
+    "possibleWinTitle": "Posible ganancia"
+  },
+  "betInfoItem": {
+    "betAmountTitle": "Monto de la apuesta",
+    "payoutTitle": "Pago"
+  },
+  "betStatuses": {
+    "ALL": "Todas las apuestas",
+    "LOSE": "Perder",
+    "VOID": "Nulo",
+    "WIN": "Ganar"
+  },
+  "betslipAcceptChangeModes": {
+    "NO": "Preguntar antes de cambiar coeficiente",
+    "UP": "Aceptar si el coeficiente sube",
+    "YES": "Aceptar cualquier cambio de coeficiente"
+  },
+  "betslipAddBet": {
+    "eventIsSuspendSubtitle": "Por favor seleccione otro evento o intente nuevamente más tarde",
+    "eventIsSuspendTitle": "Este evento está suspendido actualmente"
+  },
+  "betslipEmptyState": {
+    "subtitle": "¡No hay apuestas seleccionadas! Por favor explore nuestro sportsbook y seleccione apuestas tocando las cuotas.",
+    "title": "Su boleto de apuestas está vacío"
+  },
+  "betslipErrorMessages": {
+    "betPlaceErrorTitle": "Error al realizar la apuesta"
+  },
+  "betslipForm": {
+    "acceptAllChangesAndPlaceBetButton": "Aceptar todos los cambios y realizar apuesta",
+    "depositButton": "Depositar",
+    "enterAmountButton": "Ingrese monto a apostar",
+    "placeBetButton": "Realizar apuesta {0}",
+    "removeInactive": "Eliminar una selección inactiva"
+  },
+  "betslipItemTemplate": {
+    "betAmountLabel": "Monto de la apuesta",
+    "maxBetButton": "Apuesta máxima",
+    "totalPossibleWinTitle": "Ganancia total posible"
+  },
+  "betslipMultipleOdds": {
+    "amountLabel": "Monto",
+    "cleanBetslipButton": "Limpiar boleto de apuestas",
+    "maxBetButton": "Apuesta máxima",
+    "totalOddsTitle": "Cuotas totales",
+    "totalPossibleWinTitle": "Ganancia total posible"
+  },
+  "betslipMyBets": {
+    "shouldLoginSubtitle": "Para ver sus apuestas, debe iniciar sesión o registrarse",
+    "shouldLoginTitle": "Necesita iniciar sesión"
+  },
+  "betslipSuccessScreen": {
+    "betPlacedSuccessfullTitle": "Apuesta realizada con éxito",
+    "okButton": "Ok",
+    "repeatBetButton": "Repetir apuesta"
+  },
+  "betslipTabs": {
+    "betslipTab": "Boleto de apuestas",
+    "myBetsTab": "Mis apuestas"
+  },
+  "casinoCategoryNavigation": {
+    "homeTitle": "Inicio",
+    "searchTitle": "Buscar"
+  },
+  "casinoGameList": {
+    "viewAllButton": "Ver todo"
+  },
+  "expander": {
+    "showLessButton": "Mostrar menos",
+    "showMoreButton": "Mostrar todo"
+  },
+  "footerAbout": {
+    "aboutTitle": "Sobre nosotros",
+    "affiliatesTitle": "Afiliados",
+    "contactUsTitle": "Contáctenos",
+    "promotionsTitle": "Promociones",
+    "title": "Acerca de"
+  },
+  "footerHelp": {
+    "amlKycPolicy": "Política AML\u0026KYC",
+    "liveChatTitle": "Chat en vivo",
+    "responsibleGamingTitle": "Juego responsable",
+    "termsAndConditionsTitle": "Términos y condiciones",
+    "title": "Ayuda"
+  },
+  "footerInformation": {
+    "bonusPolicyTitle": "Política de bonificación",
+    "privacyPolicyTitle": "Política de privacidad",
+    "rulesTitle": "Reglas",
+    "title": "Información"
+  },
+  "footerServices": {
+    "casinoTitle": "Casino",
+    "sportBettingTitle": "Apuestas deportivas",
+    "statisticTitle": "Estadísticas",
+    "title": "Servicios",
+    "tvGamesTitle": "Juegos de TV"
+  },
+  "header": {
+    "depositButton": "Depositar",
+    "signUpButton": "Registrarse"
+  },
+  "historyBet": {
+    "noBetsSubtitle": "Aún no hay apuestas",
+    "noBetsTitle": "Sin apuestas",
+    "title": "Historial de apuestas"
+  },
+  "historyPayment": {
+    "depositTabLabel": "Depósito",
+    "noPaymentsSubtitle": "Aún no hay historial",
+    "noPaymentsTitle": "Sin pagos",
+    "title": "Historial de pagos",
+    "withdrawalTabLabel": "Retiro"
+  },
+  "historySpins": {
+    "noSpinsSubtitle": "Aún no hay historial",
+    "noSpinsTitle": "Sin giros",
+    "title": "Historial de giros"
+  },
+  "leftSidebar": {
+    "popularEventsTitle": "Eventos populares",
+    "sportsTitle": "Deportes",
+    "topTournamentsTitle": "Torneos principales"
+  },
+  "menuBanner": {
+    "alt": "Banner de registro",
+    "signUp": "Registrarse",
+    "title": "Regístrese y obtenga un bono"
+  },
+  "menuHistory": {
+    "betHistoryTitle": "Historial de apuestas",
+    "paymentsHistoryTitle": "Historial de pagos",
+    "spinsHistoryTitle": "Historial de giros",
+    "title": "Historial"
+  },
+  "menuInformation": {
+    "bonusPolicyTitle": "Política de bonificación",
+    "privacyPolicyTitle": "Política de privacidad",
+    "rulesTitle": "Reglas",
+    "title": "Información"
+  },
+  "menuLogoutButton": {
+    "logout": "Cerrar sesión"
+  },
+  "menuProduct": {
+    "casinoTitle": "Casino",
+    "liveTitle": "En vivo",
+    "sportTitle": "Deporte",
+    "title": "Producto"
+  },
+  "menuProfile": {
+    "depositTitle": "Depositar",
+    "infoTitle": "Información",
+    "title": "Perfil",
+    "withdrawalTitle": "Retiro"
+  },
+  "mobileNav": {
+    "casinoTitle": "Casino",
+    "liveTitle": "En vivo",
+    "menuTitle": "Menú",
+    "sportTitle": "Deporte"
+  },
+  "paymentFinalScreen": {
+    "goToCasinoButton": "Ir al casino",
+    "goToSportsButton": "Ir a deportes",
+    "transactionHistoryButton": "Historial de transacciones"
+  },
+  "paymentForm": {
+    "amountLabel": "Monto"
+  },
+  "profileDeposit": {
+    "maxAmountTitle": "Monto máximo",
+    "minAmountTitle": "Monto mínimo",
+    "selectPaymentMethodTitle": "Seleccione método de pago",
+    "title": "Depósito"
+  },
+  "profileDepositDetails": {
+    "errorTitle": "Título de error",
+    "maxAmountTitle": "Monto máximo",
+    "minAmountTitle": "Monto mínimo",
+    "pendingSubtitle": "Por favor espere, el depósito está siendo procesado",
+    "pendingTitle": "Depósito pendiente",
+    "repeatDepositButton": "Repetir depósito",
+    "submitButton": "Depositar",
+    "successTitle": "¡Pago exitoso!",
+    "title": "Detalles del depósito"
+  },
+  "profileDropdown": {
+    "profileButton": "Mi perfil"
+  },
+  "profileInfo": {
+    "birthDateLabel": "Fecha de nacimiento (Opcional)",
+    "countryLabel": "País",
+    "currencyLabel": "Moneda",
+    "emailLabel": "Correo electrónico",
+    "firstNameLabel": "Nombre (Opcional)",
+    "lastNameLabel": "Apellido (Opcional)",
+    "phoneLabel": "Teléfono (Opcional)",
+    "saveButton": "Guardar",
+    "title": "Información de la cuenta"
+  },
+  "profileWithdrawal": {
+    "maxAmountTitle": "Monto máximo",
+    "minAmountTitle": "Monto mínimo",
+    "selectPaymentMethodTitle": "Seleccione método de pago",
+    "title": "Retiro"
+  },
+  "profileWithdrawalDetails": {
+    "errorTitle": "Título de error",
+    "maxAmountTitle": "Monto máximo",
+    "minAmountTitle": "Monto mínimo",
+    "pendingSubtitle": "Por favor espere, el retiro está siendo procesado",
+    "pendingTitle": "Retiro pendiente",
+    "repeatWithdrawalButton": "Repetir retiro",
+    "submitButton": "Retirar",
+    "successTitle": "¡Retiro exitoso!",
+    "title": "Detalles del retiro"
+  },
+  "signIn": {
+    "dontHaveAccountTitle": "¿No tiene cuenta?",
+    "emailLabel": "Correo electrónico",
+    "forgotPasswordTitle": "¿Olvidó su contraseña?",
+    "passwordLabel": "Contraseña",
+    "signInButton": "Iniciar sesión",
+    "signUpButton": "Registrarse",
+    "title": "Iniciar sesión"
+  },
+  "signUp": {
+    "birthDateLabel": "Fecha de nacimiento (Opcional)",
+    "byEmailButton": "Crear cuenta con correo electrónico",
+    "continueWithAppleButton": "Continuar con Apple",
+    "continueWithFacebookButton": "Continuar con Facebook",
+    "continueWithGoogleButton": "Continuar con Google",
+    "countryLabel": "País",
+    "createAccountButton": "Crear cuenta",
+    "currencyLabel": "Moneda",
+    "emailLabel": "Correo electrónico",
+    "errorTitle": "Error al crear la cuenta",
+    "firstNameLabel": "Nombre (Opcional)",
+    "lastNameLabel": "Apellido (Opcional)",
+    "orDivider": "o",
+    "passwordLabel": "Contraseña",
+    "phoneLabel": "Teléfono (Opcional)",
+    "repeatPasswordLabel": "Repetir contraseña",
+    "successSubtitle": "Su cuenta ha sido creada",
+    "successTitle": "Éxito",
+    "title": "Registrarse"
+  },
+  "sportCompetitionFilterTimes": {
+    "all": "Todo",
+    "oneHourTitle": "1 h",
+    "threeHourTitle": "3 h",
+    "todayTitle": "Hoy",
+    "tomorrowTitle": "Mañana"
+  },
+  "sportCompetitionTabs": {
+    "allTitle": "Todo",
+    "topTitle": "Principales competiciones"
+  },
+  "sportsbookEmpty": {
+    "subtitle": "Intente cambiar la configuración o intente nuevamente más tarde",
+    "title": "No se encontraron eventos"
+  },
+  "validationMessages": {
+    "confirmPasswordIsRequired": "Confirmar contraseña es obligatorio",
+    "countryIsRequired": "El país es obligatorio",
+    "currencyIsRequired": "La moneda es obligatoria",
+    "emailIsIncorrect": "El correo electrónico es incorrecto",
+    "emailIsRequired": "El correo electrónico es obligatorio",
+    "insuficientAmount": "Monto insuficiente",
+    "passwordDoesntMatch": "Las contraseñas no coinciden",
+    "passwordIsRequired": "La contraseña es obligatoria",
+    "passwordMin": "La contraseña debe tener al menos 6 caracteres"
+  }
+}
