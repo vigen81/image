@@ -31,26 +31,26 @@ env:
 jobs:
 
   build-image:
-    runs-on: self-hosted
-    outputs:
-      image_tag: ${{ steps.docker-build.outputs.image_tag }}
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4
+    uses: Phoenix365-tech/actions/.github/workflows/docker-build.yaml@main
+    with:
+      image_tag: ${{ inputs.tag }}
 
-      - name: build and upload to ecr
-        id: docker-build
-        uses: Phoenix365-tech/actions-wip/docker@main
-        with:
-          image_tag: ${{ env.tag }}
+  set-env:
+    runs-on: infra-runner
+    outputs:
+      deploy_environment: ${{ steps.setup-env.outputs.deploy_environment }}
+    steps:
+      - name: Set up environment variable
+        id: setup-env
+        run: |
+          ENVIRONMENT="${{ github.event.inputs.env || 'dev' }}"
+          echo "deploy_environment=$ENVIRONMENT" >> $GITHUB_OUTPUT
 
   deploy:
-    needs: build-image
-    runs-on: self-hosted
-    steps:
-      - name: check promotion and run deploy for application
-        uses: Phoenix365-tech/actions-wip/deploy@main
-        with:
-          env: ${{ env.environment }}
-          image_tag: ${{ needs.build-image.outputs.image_tag }}
-          token: ${{ secrets.PHOENIX_ORG_TOKEN }}
+    needs: [build-image, set-env]
+    uses: Phoenix365-tech/actions/.github/workflows/deploy.yaml@main
+    with:
+      env: ${{ needs.set-env.outputs.deploy_environment }}
+      image_tag: ${{ needs.build-image.outputs.image_tag }}
+    secrets:
+      token: ${{ secrets.PHOENIX_ORG_TOKEN }}
