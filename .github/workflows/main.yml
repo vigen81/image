@@ -52,5 +52,6 @@ jobs:
     with:
       env: ${{ needs.set-env.outputs.deploy_environment }}
       image_tag: ${{ needs.build-image.outputs.image_tag }}
+      app_name: "imagix-service"
     secrets:
       token: ${{ secrets.PHOENIX_ORG_TOKEN }}
