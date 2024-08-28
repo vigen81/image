@@ -10,6 +10,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/google/uuid"
 	"net/http"
 )
@@ -39,6 +40,7 @@ func New() http.HandlerFunc {
 		AppName:       "Bat Server 1.0",
 	})
 
+	app.Use(logger.New())
 	app.Use(cors.New())
 	routes(app)
 
