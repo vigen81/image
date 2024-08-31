@@ -1,0 +1,74 @@
+name: Push to prod
+run-name: Deploy ${{ inputs.tag }} to production by @${{ github.actor }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to deploy"
+        required: false
+        type: string
+        default: ""
+
+env:
+  dev_ecr: 905418036266.dkr.ecr.eu-central-1.amazonaws.com
+  prod_ecr: 014498638709.dkr.ecr.eu-central-1.amazonaws.com
+
+jobs:
+  push-image-to-prod-ecr:
+    permissions:
+      contents: read
+      id-token: write
+    runs-on: infra-runner
+    steps:
+      - name: Configure docker login to dev ECR
+        run: aws ecr get-login-password | docker login --username AWS --password-stdin ${{ env.dev_ecr }}
+
+      - name: Pull image from dev ECR
+        run: docker pull ${{ env.dev_ecr }}/${{ github.event.repository.name }}:${{ inputs.tag }}
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-central-1
+          role-to-assume: arn:aws:iam::014498638709:role/github-actions-runner-role
+
+      - name: Get or create ecr repository
+        run: >
+          aws ecr describe-repositories --repository-names ${{ github.event.repository.name }}
+          --query "repositories[0].repositoryUri" ||
+          aws ecr create-repository --repository-name ${{ github.event.repository.name }}
+
+      - name: Configure docker login for prod ECR
+        run: aws ecr get-login-password | docker login --username AWS --password-stdin ${{ env.prod_ecr }}
+
+      - name: Tag docker image with prod ECR
+        run: docker tag ${{ env.dev_ecr }}/${{ github.event.repository.name }}:${{ inputs.tag }} ${{ env.prod_ecr }}/${{ github.event.repository.name }}:${{ inputs.tag }}
+
+      - name: Push docker image to prod ECR
+        run: docker push ${{ env.prod_ecr }}/${{ github.event.repository.name }}:${{ inputs.tag }}
+
+  deploy-to-prod:
+    needs: push-image-to-prod-ecr
+    permissions:
+      contents: read
+      id-token: write
+    runs-on: infra-runner
+    steps:
+      - name: create manifest
+        id: create-manifest
+        uses: Phoenix365-tech/actions-wip/create-manifest@main
+        with:
+          image_tag: ${{ inputs.tag }}
+          env: prod
+          token: ${{ secrets.PHOENIX_ORG_TOKEN }}
+          cluster: apps-prod
+          app_name: imagix-service
+
+      - name: Deploy on EKS
+        uses: Phoenix365-tech/actions-wip/flux-update-image@main
+        with:
+          env: prod
+          cluster: apps-prod
+          manifest: ${{ steps.create-manifest.outputs.manifest }}
+          token: ${{ secrets.PHOENIX_ORG_TOKEN }}
