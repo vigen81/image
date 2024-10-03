@@ -32,7 +32,7 @@ func main() {
 	}
 
 	cgf.Load(ams.NewSource(
-		ams.WithSecretName(fmt.Sprintf("%s/imagix", env_os.Env())),
+		ams.WithSecretName(fmt.Sprintf("/%s/imagix", env_os.Env())),
 	))
 
 	if err := cgf.Scan(&cnf); err != nil {
