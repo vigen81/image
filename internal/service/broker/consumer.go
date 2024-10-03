@@ -2,16 +2,20 @@ package broker
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"github.com/Phoenix365-tech/imagix/ent/image"
 	"github.com/Phoenix365-tech/imagix/internal/service/db"
 	"github.com/Phoenix365-tech/imagix/internal/service/fs"
 	"github.com/Phoenix365-tech/imagix/internal/service/processor"
+	awscfg "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/gammazero/workerpool"
 	"github.com/segmentio/kafka-go"
+	"github.com/segmentio/kafka-go/sasl/aws_msk_iam_v2"
 	"go-micro.dev/v5/logger"
 	"os"
+	"time"
 )
 
 var (
@@ -27,6 +31,39 @@ type Message struct {
 	Service string          `json:"service"`
 }
 
+func Reader() *kafka.Reader {
+	if os.Getenv("PHOENIX365_ENVIRONMENT") == "prod" {
+		return readerProd()
+	}
+	return kafka.NewReader(kafka.ReaderConfig{
+		Topic:    os.Getenv("KAFKA_TOPIC"),
+		Brokers:  []string{os.Getenv("KAFKA_BROKER")},
+		Dialer:   kafka.DefaultDialer,
+		MaxBytes: 10e6,
+		GroupID:  "main",
+	})
+}
+
+func readerProd() *kafka.Reader {
+	cfg, err := awscfg.LoadDefaultConfig(context.TODO())
+	if err != nil {
+		panic(err)
+	}
+	mechanism := aws_msk_iam_v2.NewMechanism(cfg)
+	return kafka.NewReader(kafka.ReaderConfig{
+		Topic:   os.Getenv("KAFKA_TOPIC"),
+		Brokers: []string{os.Getenv("KAFKA_BROKER")},
+		Dialer: &kafka.Dialer{
+			Timeout:       10 * time.Second,
+			DualStack:     true,
+			SASLMechanism: mechanism,
+			TLS:           &tls.Config{},
+		},
+		MaxBytes: 10e6,
+		GroupID:  "main",
+	})
+}
+
 func Consume() (err error) {
 	logger.Info("Starting consumer")
 	pool = workerpool.New(10)
@@ -34,13 +71,7 @@ func Consume() (err error) {
 	if err != nil {
 		return err
 	}
-	reader = kafka.NewReader(kafka.ReaderConfig{
-		Brokers:  []string{os.Getenv("KAFKA_BROKER")},
-		Dialer:   kafka.DefaultDialer,
-		Topic:    os.Getenv("KAFKA_TOPIC"),
-		GroupID:  "main",
-		MaxBytes: 10e6, // 10MB
-	})
+	reader = Reader()
 
 	go func() {
 		for {
