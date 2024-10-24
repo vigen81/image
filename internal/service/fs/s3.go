@@ -3,7 +3,6 @@ package fs
 import (
 	"bytes"
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/jszwec/s3fs"
@@ -68,8 +67,7 @@ func Fs() *FS {
 		var bucket = os.Getenv("AWS_BUCKET") // "bucket-name
 		s, err := session.NewSession(
 			&aws.Config{
-				Region:      aws.String(os.Getenv("AWS_REGION")),
-				Credentials: credentials.NewStaticCredentials(os.Getenv("AWS_KEY"), os.Getenv("AWS_SECRET"), ""),
+				Region: aws.String(os.Getenv("AWS_REGION")),
 			})
 		if err != nil {
 			log.Fatal(err)
