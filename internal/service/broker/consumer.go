@@ -69,10 +69,7 @@ func readerProd() *kafka.Reader {
 func Consume() (err error) {
 	logger.Info("Starting consumer")
 	pool = workerpool.New(10)
-	_, err = kafka.Dial("tcp", os.Getenv("KAFKA_BROKER"))
-	if err != nil {
-		return err
-	}
+
 	reader = Reader()
 
 	go func() {
