@@ -10,8 +10,6 @@ import (
 	"os"
 	"strconv"
 
-	"go-micro.dev/v5/logger"
-
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
 
@@ -47,7 +45,7 @@ func Open() (*ent.Client, error) {
 		SSL:      os.Getenv("POSTGRES_SSL"),
 	}
 
-	databaseUrl := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=%s",
+	databaseUrl := fmt.Sprintf("user=%s password=%s host=%s port=%d dbname=%s sslmode=%s",
 		cc.Username,
 		cc.Password,
 		cc.Host,
@@ -56,7 +54,6 @@ func Open() (*ent.Client, error) {
 		cc.SSL,
 	)
 
-	logger.Infof("Database %s", databaseUrl)
 	db, err := sql.Open("pgx", databaseUrl)
 	if err != nil {
 		return nil, err
