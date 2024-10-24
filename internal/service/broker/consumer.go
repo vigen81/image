@@ -37,11 +37,12 @@ func Reader() *kafka.Reader {
 		return readerProd()
 	}
 	return kafka.NewReader(kafka.ReaderConfig{
-		Topic:    os.Getenv("KAFKA_TOPIC"),
-		Brokers:  []string{os.Getenv("KAFKA_BROKER")},
-		Dialer:   kafka.DefaultDialer,
-		MaxBytes: 10e6,
-		GroupID:  "imagix_group_main" + os.Getenv("PHOENIX365_ENVIRONMENT"),
+		Topic:          os.Getenv("KAFKA_TOPIC"),
+		CommitInterval: 1 * time.Second,
+		Brokers:        []string{os.Getenv("KAFKA_BROKER")},
+		Dialer:         kafka.DefaultDialer,
+		MaxBytes:       10e6,
+		GroupID:        "imagix_group_main" + os.Getenv("PHOENIX365_ENVIRONMENT"),
 	})
 }
 
@@ -53,8 +54,9 @@ func readerProd() *kafka.Reader {
 	mechanism := aws_msk_iam_v2.NewMechanism(cfg)
 	addrs := strings.Split(os.Getenv("KAFKA_BROKER"), ",")
 	return kafka.NewReader(kafka.ReaderConfig{
-		Topic:   os.Getenv("KAFKA_TOPIC"),
-		Brokers: addrs,
+		Topic:          os.Getenv("KAFKA_TOPIC"),
+		Brokers:        addrs,
+		CommitInterval: 1 * time.Second,
 		Dialer: &kafka.Dialer{
 			Timeout:       10 * time.Second,
 			DualStack:     true,
@@ -103,10 +105,6 @@ func handleSave(m kafka.Message) {
 		}
 		if info.IsProceed {
 			logger.Infof("Image already processed: %s", message.UUID)
-			err = reader.CommitMessages(context.Background(), m)
-			if err != nil {
-				logger.Errorf("Error committing message: %v", err)
-			}
 			return
 		}
 
@@ -145,11 +143,7 @@ func handleSave(m kafka.Message) {
 			logger.Errorf("Error writing image: %v", err)
 			return
 		}
-		err = reader.CommitMessages(context.Background(), m)
-		if err != nil {
-			logger.Errorf("Error committing message: %v", err)
-			return
-		}
+
 		err = info.Update().SetURL(url).
 			SetIsProceed(true).
 			SetService(message.Service).
