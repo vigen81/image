@@ -41,7 +41,7 @@ func Reader() *kafka.Reader {
 		Brokers:  []string{os.Getenv("KAFKA_BROKER")},
 		Dialer:   kafka.DefaultDialer,
 		MaxBytes: 10e6,
-		GroupID:  "main",
+		GroupID:  "imagix_group_main" + os.Getenv("PHOENIX365_ENVIRONMENT"),
 	})
 }
 
@@ -62,7 +62,7 @@ func readerProd() *kafka.Reader {
 			TLS:           &tls.Config{},
 		},
 		MaxBytes: 10e6,
-		GroupID:  "main",
+		GroupID:  "imagix_group_main" + os.Getenv("PHOENIX365_ENVIRONMENT"),
 	})
 }
 
