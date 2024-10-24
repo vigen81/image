@@ -15,6 +15,7 @@ import (
 	"github.com/segmentio/kafka-go/sasl/aws_msk_iam_v2"
 	"go-micro.dev/v5/logger"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -50,9 +51,10 @@ func readerProd() *kafka.Reader {
 		panic(err)
 	}
 	mechanism := aws_msk_iam_v2.NewMechanism(cfg)
+	addrs := strings.Split(os.Getenv("KAFKA_BROKER"), ",")
 	return kafka.NewReader(kafka.ReaderConfig{
 		Topic:   os.Getenv("KAFKA_TOPIC"),
-		Brokers: []string{os.Getenv("KAFKA_BROKER")},
+		Brokers: addrs,
 		Dialer: &kafka.Dialer{
 			Timeout:       10 * time.Second,
 			DualStack:     true,
