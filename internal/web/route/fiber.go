@@ -75,7 +75,7 @@ func Upload(c *fiber.Ctx) error {
 			processor.WithContentType(dataUrl.ContentType()),
 			processor.WithOperations(
 				processor.ConvertOperation("webp"),
-				processor.ResizeOperation(600),
+				processor.ResizeOperation(1600),
 			))
 		if err != nil {
 			return err
