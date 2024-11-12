@@ -33,17 +33,8 @@ type Message struct {
 }
 
 func Reader() *kafka.Reader {
-	if os.Getenv("PHOENIX365_ENVIRONMENT") == "prod" {
-		return readerProd()
-	}
-	return kafka.NewReader(kafka.ReaderConfig{
-		Topic:          os.Getenv("KAFKA_TOPIC"),
-		CommitInterval: 1 * time.Second,
-		Brokers:        []string{os.Getenv("KAFKA_BROKER")},
-		Dialer:         kafka.DefaultDialer,
-		MaxBytes:       10e6,
-		GroupID:        "imagix_group_main" + os.Getenv("PHOENIX365_ENVIRONMENT"),
-	})
+	return readerProd()
+
 }
 
 func readerProd() *kafka.Reader {
