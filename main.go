@@ -29,23 +29,28 @@ func main() {
 
 	if err != nil {
 		logger.Fatal(err.Error())
+		return
 	}
 
-	cgf.Load(ams.NewSource(
+	err = cgf.Load(ams.NewSource(
 		ams.WithSecretName(fmt.Sprintf("/%s/imagix", env_os.Env())),
 	))
 
-	if err := cgf.Scan(&cnf); err != nil {
+	if err != nil {
+		logger.Fatal(err.Error())
+		return
+	}
 
+	if err := cgf.Scan(&cnf); err != nil {
 		logger.Fatal(err.Error())
 	}
 	for k, v := range cnf {
-		os.Setenv(k, fmt.Sprintf("%v", v))
+		err := os.Setenv(k, fmt.Sprintf("%v", v))
+		if err != nil {
+			logger.Fatal(err.Error())
+		}
 	}
 
-	if err != nil {
-		logger.Fatal(err.Error())
-	}
 	srv := httpServer.NewServer(
 		server.Name(serviceName),
 		server.Address(fmt.Sprintf(":%d", 8080)),
