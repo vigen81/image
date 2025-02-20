@@ -2,15 +2,16 @@ package fs
 
 import (
 	"bytes"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/jszwec/s3fs"
 	"io"
 	"log"
 	"os"
 	"strings"
 	"sync"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/jszwec/s3fs"
 )
 
 var once sync.Once
@@ -21,12 +22,16 @@ type FS struct {
 }
 
 func (fs *FS) Write(filename string, data []byte, contentType string) error {
+	cacheControlHeader := "max-age=600"
 	filename = strings.Trim(filename, "/")
 	_, err := fs.ctx.PutObject(&s3.PutObjectInput{
 		Bucket:      aws.String(os.Getenv("AWS_BUCKET")),
 		Key:         aws.String(filename),
 		Body:        bytes.NewReader(data),
 		ContentType: aws.String(contentType),
+		Metadata: map[string]*string{
+			"Cache-Control": aws.String(cacheControlHeader),
+		},
 	})
 	if err != nil {
 		return err
