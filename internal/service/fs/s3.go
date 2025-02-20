@@ -25,13 +25,11 @@ func (fs *FS) Write(filename string, data []byte, contentType string) error {
 	cacheControlHeader := "max-age=600"
 	filename = strings.Trim(filename, "/")
 	_, err := fs.ctx.PutObject(&s3.PutObjectInput{
-		Bucket:      aws.String(os.Getenv("AWS_BUCKET")),
-		Key:         aws.String(filename),
-		Body:        bytes.NewReader(data),
-		ContentType: aws.String(contentType),
-		Metadata: map[string]*string{
-			"Cache-Control": aws.String(cacheControlHeader),
-		},
+		Bucket:       aws.String(os.Getenv("AWS_BUCKET")),
+		Key:          aws.String(filename),
+		Body:         bytes.NewReader(data),
+		ContentType:  aws.String(contentType),
+		CacheControl: aws.String(cacheControlHeader),
 	})
 	if err != nil {
 		return err
