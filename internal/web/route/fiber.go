@@ -4,13 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/Phoenix365-tech/imagix/internal/service/db"
-	"github.com/Phoenix365-tech/imagix/internal/service/fs"
-	"github.com/Phoenix365-tech/imagix/internal/service/processor"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/google/uuid"
+	"gitlab.smartbet.am/golang/smart-image/internal/service/db"
+	"gitlab.smartbet.am/golang/smart-image/internal/service/fs"
+	"gitlab.smartbet.am/golang/smart-image/internal/service/processor"
 	"net/http"
 )
 

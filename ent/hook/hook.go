@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Phoenix365-tech/imagix/ent"
+	"gitlab.smartbet.am/golang/smart-image/ent"
 )
 
 // The ImageFunc type is an adapter to allow the use of ordinary

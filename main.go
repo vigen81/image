@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/Phoenix365-tech/imagix/internal/env_os"
-	"github.com/Phoenix365-tech/imagix/internal/plugin/ams"
-	"github.com/Phoenix365-tech/imagix/internal/service/broker"
-	"github.com/Phoenix365-tech/imagix/internal/service/db"
-	"github.com/Phoenix365-tech/imagix/internal/web/route"
 	httpServer "github.com/micro/plugins/v5/server/http"
+	"gitlab.smartbet.am/golang/smart-image/internal/env_os"
+	"gitlab.smartbet.am/golang/smart-image/internal/plugin/ams"
+	"gitlab.smartbet.am/golang/smart-image/internal/service/broker"
+	"gitlab.smartbet.am/golang/smart-image/internal/service/db"
+	"gitlab.smartbet.am/golang/smart-image/internal/web/route"
 	"go-micro.dev/v5"
 	"go-micro.dev/v5/config"
 	"go-micro.dev/v5/logger"
@@ -37,7 +37,7 @@ func main() {
 	))
 
 	if err != nil {
-		logger.Fatal(err.Error())
+		panic(err)
 		return
 	}
 

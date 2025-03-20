@@ -1,4 +1,4 @@
-module github.com/Phoenix365-tech/imagix
+module gitlab.smartbet.am/golang/smart-image
 
 go 1.22
 

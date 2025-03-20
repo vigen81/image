@@ -5,12 +5,12 @@ package enttest
 import (
 	"context"
 
-	"github.com/Phoenix365-tech/imagix/ent"
+	"gitlab.smartbet.am/golang/smart-image/ent"
 	// required by schema hooks.
-	_ "github.com/Phoenix365-tech/imagix/ent/runtime"
+	_ "gitlab.smartbet.am/golang/smart-image/ent/runtime"
 
 	"entgo.io/ent/dialect/sql/schema"
-	"github.com/Phoenix365-tech/imagix/ent/migrate"
+	"gitlab.smartbet.am/golang/smart-image/ent/migrate"
 )
 
 type (

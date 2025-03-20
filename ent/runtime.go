@@ -5,8 +5,8 @@ package ent
 import (
 	"time"
 
-	"github.com/Phoenix365-tech/imagix/ent/image"
-	"github.com/Phoenix365-tech/imagix/ent/schema"
+	"gitlab.smartbet.am/golang/smart-image/ent/image"
+	"gitlab.smartbet.am/golang/smart-image/ent/schema"
 )
 
 // The init function reads all schema descriptors with runtime code

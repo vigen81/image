@@ -11,8 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/Phoenix365-tech/imagix/ent/image"
-	"github.com/Phoenix365-tech/imagix/ent/predicate"
+	"gitlab.smartbet.am/golang/smart-image/ent/image"
+	"gitlab.smartbet.am/golang/smart-image/ent/predicate"
 )
 
 // ImageQuery is the builder for querying Image entities.

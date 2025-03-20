@@ -2,7 +2,7 @@
 
 package runtime
 
-// The schema-stitching logic is generated in github.com/Phoenix365-tech/imagix/ent/runtime.go
+// The schema-stitching logic is generated in gitlab.smartbet.am/golang/smart-image/ent/runtime.go
 
 const (
 	Version = "v0.14.0"                                         // Version of ent codegen.

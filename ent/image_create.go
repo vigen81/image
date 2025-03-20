@@ -10,8 +10,8 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/Phoenix365-tech/imagix/ent/image"
-	"github.com/Phoenix365-tech/imagix/internal/service/processor"
+	"gitlab.smartbet.am/golang/smart-image/ent/image"
+	"gitlab.smartbet.am/golang/smart-image/internal/service/processor"
 )
 
 // ImageCreate is the builder for creating a Image entity.

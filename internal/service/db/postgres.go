@@ -3,8 +3,8 @@ package db
 import (
 	"context"
 	"database/sql"
-	"github.com/Phoenix365-tech/imagix/ent"
-	"github.com/Phoenix365-tech/imagix/ent/migrate"
+	"gitlab.smartbet.am/golang/smart-image/ent"
+	"gitlab.smartbet.am/golang/smart-image/ent/migrate"
 
 	"fmt"
 	"os"

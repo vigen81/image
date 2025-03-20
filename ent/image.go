@@ -10,8 +10,8 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/Phoenix365-tech/imagix/ent/image"
-	"github.com/Phoenix365-tech/imagix/internal/service/processor"
+	"gitlab.smartbet.am/golang/smart-image/ent/image"
+	"gitlab.smartbet.am/golang/smart-image/internal/service/processor"
 )
 
 // Image is the model entity for the Image schema.

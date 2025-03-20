@@ -9,12 +9,12 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/Phoenix365-tech/imagix/ent/migrate"
+	"gitlab.smartbet.am/golang/smart-image/ent/migrate"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
-	"github.com/Phoenix365-tech/imagix/ent/image"
+	"gitlab.smartbet.am/golang/smart-image/ent/image"
 )
 
 // Client is the client that holds all ent builders.

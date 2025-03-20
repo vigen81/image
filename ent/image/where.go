@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/Phoenix365-tech/imagix/ent/predicate"
+	"gitlab.smartbet.am/golang/smart-image/ent/predicate"
 )
 
 // ID filters vertices based on their ID field.

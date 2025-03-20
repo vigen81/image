@@ -4,7 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/mixin"
-	"github.com/Phoenix365-tech/imagix/internal/service/processor"
+	"gitlab.smartbet.am/golang/smart-image/internal/service/processor"
 )
 
 // Image holds the schema definition for the Image entity.
