@@ -2,26 +2,24 @@ package broker
 
 import (
 	"context"
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	awscfg "github.com/aws/aws-sdk-go-v2/config"
+	"gitlab.smartbet.am/golang/smart-image/internal/config"
+	"time"
+
 	"github.com/gammazero/workerpool"
 	"github.com/segmentio/kafka-go"
-	"github.com/segmentio/kafka-go/sasl/aws_msk_iam_v2"
 	"gitlab.smartbet.am/golang/smart-image/ent/image"
+	"gitlab.smartbet.am/golang/smart-image/internal/logger"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/db"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/fs"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/processor"
-	"go-micro.dev/v5/logger"
-	"os"
-	"strings"
-	"time"
 )
 
 var (
 	reader *kafka.Reader
 	pool   *workerpool.WorkerPool
+	lcfg   *config.Config
 )
 
 type Message struct {
@@ -38,29 +36,23 @@ func Reader() *kafka.Reader {
 }
 
 func readerProd() *kafka.Reader {
-	cfg, err := awscfg.LoadDefaultConfig(context.TODO())
-	if err != nil {
-		panic(err)
-	}
-	mechanism := aws_msk_iam_v2.NewMechanism(cfg)
-	addrs := strings.Split(os.Getenv("KAFKA_BROKER"), ",")
+	lcfg = config.Get()
+	//_, err := awscfg.LoadDefaultConfig(context.TODO())
+
+	//addrs := strings.Split(lcfg.KafkaBroker, ",")
+
 	return kafka.NewReader(kafka.ReaderConfig{
-		Topic:          os.Getenv("KAFKA_TOPIC"),
-		Brokers:        addrs,
+		Topic:          lcfg.KafkaTopic,
+		Brokers:        []string{"localhost:9092"},
 		CommitInterval: 1 * time.Second,
-		Dialer: &kafka.Dialer{
-			Timeout:       10 * time.Second,
-			DualStack:     true,
-			SASLMechanism: mechanism,
-			TLS:           &tls.Config{},
-		},
-		MaxBytes: 10e6,
-		GroupID:  "imagix_group_main" + os.Getenv("PHOENIX365_ENVIRONMENT"),
+		MaxBytes:       10e6,
+		GroupID:        "smart_image_group_main",
+		StartOffset:    kafka.FirstOffset,
 	})
 }
 
 func Consume() (err error) {
-	logger.Info("Starting consumer")
+	logger.Log.Info("Starting consumer")
 	pool = workerpool.New(10)
 
 	reader = Reader()
@@ -69,7 +61,7 @@ func Consume() (err error) {
 		for {
 			m, err := reader.ReadMessage(context.Background())
 			if err != nil {
-				logger.Errorf("Error reading message: %v", err)
+				logger.Log.Error("Error reading message ", "error ", err)
 				break
 			}
 			handleSave(m)
@@ -82,31 +74,31 @@ func handleSave(m kafka.Message) {
 	data := m.Value
 	var message Message
 	err := json.Unmarshal(data, &message)
-	logger.Infof("Message: %s", string(data))
+	logger.Log.Info("Message received", "data", string(data))
+
 	if err != nil {
-		logger.Errorf("Error unmarshalling message: %v", err)
+		logger.Log.Error("Error unmarshalling message", "error", err)
 	}
 
 	pool.Submit(func() {
-
 		info, err := db.Client().Image.Query().Where(image.UUID(message.UUID)).First(context.Background())
 		if err != nil {
-			logger.Errorf("Error updating image: %v", err)
+			logger.Log.Error("Error updating image", "uuid", message.UUID, "error", err)
 			return
 		}
 		if info.IsProceed {
-			logger.Infof("Image already processed: %s", message.UUID)
+			logger.Log.Info("Image already processed", "uuid", message.UUID)
 			return
 		}
 
 		imageRaw, err := fs.Fs().Read(info.TmpURL)
-
 		if err != nil {
-			logger.Errorf("Error reading image: %v", err)
+			logger.Log.Error("Error reading image", "tmp_url", info.TmpURL, "error", err)
 			return
 		}
+
 		var size *processor.Size
-		if nil != message.Size {
+		if message.Size != nil {
 			size = message.Size
 			imageRaw, err = processor.Process(
 				processor.WithImage(imageRaw),
@@ -114,16 +106,14 @@ func handleSave(m kafka.Message) {
 				processor.WithOperations(processor.ResizeOperation(message.Size.Width, message.Size.Height)),
 			)
 			if err != nil {
-				logger.Errorf("Error processing image: %v", err)
+				logger.Log.Error("Error processing image", "uuid", message.UUID, "error", err)
 				return
 			}
-
 		}
 
 		ext, err := processor.ReleaseExtension(info.ContentType)
-
 		if err != nil {
-			logger.Errorf("Error getting extension: %v", err)
+			logger.Log.Error("Error getting extension", "content_type", info.ContentType, "error", err)
 			return
 		}
 
@@ -131,7 +121,7 @@ func handleSave(m kafka.Message) {
 
 		err = fs.Fs().Write(url, imageRaw, info.ContentType)
 		if err != nil {
-			logger.Errorf("Error writing image: %v", err)
+			logger.Log.Error("Error writing image", "url", url, "error", err)
 			return
 		}
 
@@ -142,9 +132,8 @@ func handleSave(m kafka.Message) {
 			SetObjectID(message.ID).
 			SetNillableSize(size).
 			Exec(context.Background())
-
 		if err != nil {
-			logger.Errorf("Error updating image: %v", err)
+			logger.Log.Error("Error updating image metadata", "uuid", message.UUID, "error", err)
 			return
 		}
 	})

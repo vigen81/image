@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/google/uuid"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/db"
@@ -29,7 +28,7 @@ func routes(app *fiber.App) {
 
 }
 
-func New() http.HandlerFunc {
+func New() *fiber.App {
 
 	app := fiber.New(fiber.Config{
 		Prefork:       false,
@@ -43,7 +42,7 @@ func New() http.HandlerFunc {
 	app.Use(cors.New())
 	routes(app)
 
-	return adaptor.FiberApp(app)
+	return app
 
 }
 func Upload(c *fiber.Ctx) error {

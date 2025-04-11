@@ -26,11 +26,11 @@ services:
         - '9092:9092'
         - '9093:9093'
         - '9094:9094'
-    postgres:
-      image: postgres:latest
+    mysql:
+      image: mysql:latest
       environment:
-        POSTGRES_USER: root
-        POSTGRES_PASSWORD: 123456!
-        POSTGRES_DB: imagix
+        MYSQL_ROOT_PASSWORD: 123456!
+        MYSQL_DATABASE: smart_image
       ports:
-          - "5432:5432"
+        - "3306:3306"
+    

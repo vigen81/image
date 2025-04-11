@@ -1,4 +1,4 @@
-POST https://bo.phoenix365-dev.com/api/imagix/upload
+POST https://bo.phoenix365-dev.com/api/smart-image/upload
 Content-Type: application/json
 Authorization: 1c0ec4b1-6fd7-477c-8474-eead58164db6
 
