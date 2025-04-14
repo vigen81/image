@@ -41,13 +41,27 @@ func readerProd() *kafka.Reader {
 
 	//addrs := strings.Split(lcfg.KafkaBroker, ",")
 
+	_, err := kafka.Dial("tcp", "localhost:9094")
+	if err != nil {
+		logger.Log.Error("Error connecting to kafka broker", "error", err)
+		return nil
+	}
+	logger.Log.Info("Connected to kafka broker", " broker", " localhost:9094")
 	return kafka.NewReader(kafka.ReaderConfig{
+
+		MaxBytes:       10e6, // 10MB
+		CommitInterval: time.Second,
 		Topic:          lcfg.KafkaTopic,
-		Brokers:        []string{"localhost:9092"},
-		CommitInterval: 1 * time.Second,
-		MaxBytes:       10e6,
-		GroupID:        "smart_image_group_main",
-		StartOffset:    kafka.FirstOffset,
+		Brokers:        []string{"localhost:9094"},
+		GroupID:        fmt.Sprintf("%s-%s", lcfg.KafkaTopic, "image"),
+		StartOffset:    kafka.LastOffset,
+		//StartOffset:    kafka.FirstOffset,
+		Logger: kafka.LoggerFunc(func(msg string, args ...interface{}) {
+			logger.Log.Info(fmt.Sprintf(msg, args...))
+		}),
+		ErrorLogger: kafka.LoggerFunc(func(msg string, args ...interface{}) {
+			logger.Log.Error(fmt.Sprintf(msg, args...))
+		}),
 	})
 }
 

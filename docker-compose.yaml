@@ -1,5 +1,9 @@
 version: '3.7'
 
+networks:
+  netmain:
+    driver: bridge
+
 services:
     imaginary:
       image: h2non/imaginary:latest
@@ -11,9 +15,12 @@ services:
       command: -enable-url-source -mount /mnt/data
       ports:
         - "9000:9000"
+      networks:
+        - netmain
     kafka:
       container_name: kafka
-      image: 'bitnami/kafka:latest'
+      image: 'bitnami/kafka:3.9'
+      hostname: kafka
       environment:
         - KAFKA_CFG_NODE_ID=0
         - KAFKA_CFG_PROCESS_ROLES=controller,broker
@@ -26,11 +33,30 @@ services:
         - '9092:9092'
         - '9093:9093'
         - '9094:9094'
+      networks:
+        - netmain
     mysql:
       image: mysql:latest
       environment:
         MYSQL_ROOT_PASSWORD: 123456!
-        MYSQL_DATABASE: smart_image
+        MYSQL_DATABASE: image
       ports:
         - "3306:3306"
-    
+      volumes:
+        - ./mysql_data:/var/lib/mysql
+      networks:
+        - netmain
+
+    kafka-ui:
+      image: provectuslabs/kafka-ui
+      container_name: kafka-ui
+      depends_on:
+        - kafka
+      ports:
+        - "8088:8080"
+      restart: always
+      environment:
+        - KAFKA_CLUSTERS_0_NAME=kafka
+        - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+      networks:
+        - netmain

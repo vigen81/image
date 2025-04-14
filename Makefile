@@ -18,3 +18,6 @@ swag:
 		--outputTypes go,json --parseGoList false --propertyStrategy camelcase --pd true -d ./internal
 build:
 	go build -o app
+
+docker:
+	docker compose up -d --build
