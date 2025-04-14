@@ -18,4 +18,5 @@
 imagix
 smart-image
 .env
-.idea
+.idea.idea
+mysql_data
