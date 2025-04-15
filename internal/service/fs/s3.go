@@ -2,9 +2,9 @@ package fs
 
 import (
 	"bytes"
+	"gitlab.smartbet.am/golang/smart-image/internal/config"
 	"io"
 	"log"
-	"os"
 	"strings"
 	"sync"
 
@@ -15,6 +15,7 @@ import (
 )
 
 var once sync.Once
+var cfg *config.Config
 
 type FS struct {
 	*s3fs.S3FS
@@ -25,7 +26,7 @@ func (fs *FS) Write(filename string, data []byte, contentType string) error {
 	cacheControlHeader := "max-age=600"
 	filename = strings.Trim(filename, "/")
 	_, err := fs.ctx.PutObject(&s3.PutObjectInput{
-		Bucket:       aws.String(os.Getenv("AWS_BUCKET")),
+		Bucket:       aws.String(cfg.AWS_Bucket),
 		Key:          aws.String(filename),
 		Body:         bytes.NewReader(data),
 		ContentType:  aws.String(contentType),
@@ -40,7 +41,7 @@ func (fs *FS) Write(filename string, data []byte, contentType string) error {
 func (fs *FS) Delete(filename string) error {
 	filename = strings.Trim(filename, "/")
 	_, err := fs.ctx.DeleteObject(&s3.DeleteObjectInput{
-		Bucket: aws.String(os.Getenv("AWS_BUCKET")),
+		Bucket: aws.String(cfg.AWS_Bucket),
 		Key:    aws.String(filename),
 	})
 	if err != nil {
@@ -67,10 +68,14 @@ var fs *FS
 
 func Fs() *FS {
 	once.Do(func() {
-		var bucket = os.Getenv("AWS_BUCKET") // "bucket-name
+		cfg = config.Get()
+		var bucket = cfg.AWS_Bucket
 		s, err := session.NewSession(
 			&aws.Config{
-				Region: aws.String(os.Getenv("AWS_REGION")),
+				Endpoint:         aws.String(cfg.AWS_S3Host),
+				Region:           aws.String(cfg.AWS_Region),
+				S3ForcePathStyle: aws.Bool(true),
+				DisableSSL:       aws.Bool(true), //delete for prod
 			})
 		if err != nil {
 			log.Fatal(err)

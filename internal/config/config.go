@@ -13,10 +13,14 @@ const mockConfig = `{
 	"db_host": "localhost",
 	"db_user": "root",
 	"db_password": "123456!",
-	"db_name": "image",
+	"db_name": "smart_image",
 	"api_key": "mock-secret-key",
 	"kafka_topic": "smart_image",
-	"kafka_broker": "localhost:9092"
+	"kafka_broker": "localhost:9094",
+	"imaginary": "localhost:9000",
+	"aws_bucket": "smart-image",
+	"aws_region": "us-east-1",
+	"aws_s3_host": "127.0.0.1:4566"
 }`
 
 type Config struct {
@@ -28,6 +32,10 @@ type Config struct {
 	APIKey      string `json:"api_key"`
 	KafkaTopic  string `json:"kafka_topic"`
 	KafkaBroker string `json:"kafka_broker"`
+	Imaginary   string `json:"imaginary"`
+	AWS_Bucket  string `json:"aws_bucket"`
+	AWS_Region  string `json:"aws_region"`
+	AWS_S3Host  string `json:"aws_s3_host"`
 }
 
 var config *Config

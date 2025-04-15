@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"gitlab.smartbet.am/golang/smart-image/internal/config"
+	"strings"
 	"time"
 
 	"github.com/gammazero/workerpool"
@@ -47,12 +48,17 @@ func readerProd() *kafka.Reader {
 		return nil
 	}
 	logger.Log.Info("Connected to kafka broker", " broker", " localhost:9094")
-	return kafka.NewReader(kafka.ReaderConfig{
 
+	brokers := strings.Split(lcfg.KafkaBroker, ",")
+	for i := range brokers {
+		brokers[i] = strings.TrimSpace(brokers[i])
+	}
+
+	return kafka.NewReader(kafka.ReaderConfig{
 		MaxBytes:       10e6, // 10MB
 		CommitInterval: time.Second,
 		Topic:          lcfg.KafkaTopic,
-		Brokers:        []string{"localhost:9094"},
+		Brokers:        brokers,
 		GroupID:        fmt.Sprintf("%s-%s", lcfg.KafkaTopic, "image"),
 		StartOffset:    kafka.LastOffset,
 		//StartOffset:    kafka.FirstOffset,
@@ -88,7 +94,7 @@ func handleSave(m kafka.Message) {
 	data := m.Value
 	var message Message
 	err := json.Unmarshal(data, &message)
-	logger.Log.Info("Message received", "data", string(data))
+	logger.Log.Info("Message received ", "data ", string(data))
 
 	if err != nil {
 		logger.Log.Error("Error unmarshalling message", "error", err)
@@ -97,17 +103,17 @@ func handleSave(m kafka.Message) {
 	pool.Submit(func() {
 		info, err := db.Client().Image.Query().Where(image.UUID(message.UUID)).First(context.Background())
 		if err != nil {
-			logger.Log.Error("Error updating image", "uuid", message.UUID, "error", err)
+			logger.Log.Error("Error updating image ", "uuid ", message.UUID, "error", err)
 			return
 		}
 		if info.IsProceed {
-			logger.Log.Info("Image already processed", "uuid", message.UUID)
+			logger.Log.Info("Image already processed ", "uuid ", message.UUID)
 			return
 		}
 
 		imageRaw, err := fs.Fs().Read(info.TmpURL)
 		if err != nil {
-			logger.Log.Error("Error reading image", "tmp_url", info.TmpURL, "error", err)
+			logger.Log.Error("Error reading image ", "tmp_url ", info.TmpURL, "error", err)
 			return
 		}
 
