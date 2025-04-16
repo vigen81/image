@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/broker"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/config"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/db"
@@ -10,6 +11,11 @@ import (
 	"gitlab.smartbet.am/golang/smart-image/internal/service/processor"
 	"gitlab.smartbet.am/golang/smart-image/internal/web/route"
 	"go.uber.org/fx"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 var (
@@ -37,5 +43,32 @@ func main() {
 		),
 	)
 
-	app.Run()
+	var shutdownTimeout = 5 * time.Second
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	go func() {
+		if err := app.Start(ctx); err != nil {
+			log.Printf("Failed to start application: %v", err)
+			cancel()
+		}
+	}()
+
+	// Handle OS signals
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
+	<-sigChan
+	log.Println("Shutting down gracefully...")
+
+	// Create shutdown context with timeout
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), shutdownTimeout)
+	defer shutdownCancel()
+
+	// Attempt graceful shutdown
+	if err := app.Stop(shutdownCtx); err != nil {
+		log.Printf("Error during shutdown: %v", err)
+	}
+
 }

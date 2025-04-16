@@ -32,11 +32,15 @@ type Message struct {
 }
 
 func NewConsumer(config *config.Config, processor *processor.Processor, fs *fs.FS, log *logger.Logger) *Consumer {
+	ctx, fn := context.WithCancel(context.Background())
+
 	return &Consumer{
 		config:    config,
 		processor: processor,
 		fs:        fs,
 		logger:    log,
+		ctx:       ctx,
+		cancel:    fn,
 	}
 }
 
@@ -47,6 +51,8 @@ type Consumer struct {
 	fs        *fs.FS
 	db        *db.DB
 	logger    *logger.Logger
+	ctx       context.Context
+	cancel    context.CancelFunc
 }
 
 func Start(lifecycle fx.Lifecycle, c *Consumer) {
@@ -73,6 +79,7 @@ func (c *Consumer) Close() {
 			c.logger.Error("Error closing kafka reader", "error", err)
 		}
 	}
+	c.cancel()
 	c.logger.Info("Kafka reader closed")
 }
 
@@ -119,12 +126,19 @@ func (c *Consumer) start() (err error) {
 	}
 	go func() {
 		for {
-			m, err := reader.ReadMessage(context.Background())
-			if err != nil {
-				c.logger.Error("Error reading message ", "error ", err)
-				break
+			select {
+			case <-c.ctx.Done():
+				c.logger.Info("Closing consumer")
+				return
+			default:
+				m, err := reader.ReadMessage(context.Background())
+				if err != nil {
+					c.logger.Error("Error reading message ", "error ", err)
+					break
+				}
+				c.handleSave(m)
 			}
-			c.handleSave(m)
+
 		}
 	}()
 	return nil
