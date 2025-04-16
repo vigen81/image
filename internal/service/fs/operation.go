@@ -12,17 +12,10 @@ type (
 		filename    string
 		file        []byte
 		contentType string
+		fs          *FS
 	}
 	Option func(data *operation)
 )
-
-func NewOperation(opts ...Option) Operation {
-	op := &operation{}
-	for _, opt := range opts {
-		opt(op)
-	}
-	return op
-}
 
 func WithFilename(filename string) Option {
 	return func(data *operation) {
@@ -43,7 +36,7 @@ func WithContentType(contentType string) Option {
 }
 
 func (op *operation) Read() ([]byte, error) {
-	f, err := Fs().Open(op.filename)
+	f, err := op.fs.Open(op.filename)
 	defer f.Close()
 	if err != nil {
 		return nil, err
@@ -56,9 +49,9 @@ func (op *operation) Read() ([]byte, error) {
 }
 
 func (op *operation) Write() error {
-	return Fs().Write(op.filename, op.file, op.contentType)
+	return op.fs.Write(op.filename, op.file, op.contentType)
 }
 
 func (op *operation) Delete() error {
-	return Fs().Delete(op.filename)
+	return op.fs.Delete(op.filename)
 }

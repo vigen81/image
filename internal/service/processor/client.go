@@ -3,26 +3,32 @@ package processor
 import (
 	"fmt"
 	"github.com/go-resty/resty/v2"
-	"gitlab.smartbet.am/golang/smart-image/internal/config"
-	"gitlab.smartbet.am/golang/smart-image/internal/logger"
-	"sync"
+	"gitlab.smartbet.am/golang/smart-image/internal/service/config"
+	"gitlab.smartbet.am/golang/smart-image/internal/service/logger"
 )
 
 const field = "file"
 
 var req *resty.Client
 
-var once sync.Once
-var cfg *config.Config
+func (c client) create() *resty.Client {
+	var baseUrl = fmt.Sprintf("http://%s", c.config.Imaginary)
+	logger.Log.Info("Creating new resty client")
+	req = resty.New()
+	req.SetDebug(true)
+	req.SetBaseURL(baseUrl)
+	c.req = req
+	return c.req
+}
 
-func Req() *resty.Client {
-	once.Do(func() {
-		cfg = config.Get()
-		var baseUrl = fmt.Sprintf("http://%s", cfg.Imaginary)
-		logger.Log.Info("Creating new resty client")
-		req = resty.New()
-		req.SetDebug(true)
-		req.SetBaseURL(baseUrl)
-	})
-	return req
+type client struct {
+	config *config.Config
+	req    *resty.Client
+}
+
+func NewClient(config *config.Config) *resty.Client {
+	c := &client{
+		config: config,
+	}
+	return c.create()
 }

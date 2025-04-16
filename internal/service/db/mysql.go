@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"gitlab.smartbet.am/golang/smart-image/ent"
 	"gitlab.smartbet.am/golang/smart-image/ent/migrate"
-	"gitlab.smartbet.am/golang/smart-image/internal/config"
+	"gitlab.smartbet.am/golang/smart-image/internal/service/config"
 	"strconv"
 
 	"entgo.io/ent/dialect"
@@ -14,8 +14,6 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 )
-
-var client *ent.Client
 
 type configData struct {
 	Username string `json:"username"`
@@ -27,19 +25,43 @@ type configData struct {
 
 // Open new connection
 
-func Open() (*ent.Client, error) {
-	cgf := config.Get()
-	portStr := cgf.DBPort
+type DB struct {
+	*ent.Client
+	config *config.Config
+}
+
+func NewDB(c *config.Config) *DB {
+	return &DB{
+		config: c,
+	}
+}
+func (db *DB) TX(handler func(tx *ent.Tx) error) error {
+	tx, err := db.Tx(context.Background())
+	if err != nil {
+		return err
+	}
+
+	err = handler(tx)
+
+	if err != nil {
+		_ = tx.Rollback()
+		return err
+	}
+	return tx.Commit()
+
+}
+func (db *DB) connect(ctx context.Context) error {
+	portStr := db.config.DBPort
 	port, err := strconv.Atoi(portStr)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	cc := configData{
-		Username: cgf.DBUser,
-		Password: cgf.DBPassword,
-		Host:     cgf.DBHost,
-		Db:       cgf.DBName,
+		Username: db.config.DBUser,
+		Password: db.config.DBPassword,
+		Host:     db.config.DBHost,
+		Db:       db.config.DBName,
 		Port:     port,
 	}
 
@@ -51,20 +73,24 @@ func Open() (*ent.Client, error) {
 		cc.Db,
 	)
 
-	db, err := sql.Open("mysql", databaseUrl)
+	con, err := sql.Open("mysql", databaseUrl)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	drv := entsql.OpenDB(dialect.MySQL, db)
-	client = ent.NewClient(ent.Driver(drv)).Debug()
-	err = client.Schema.Create(context.Background(), migrate.WithDropColumn(true))
+	drv := entsql.OpenDB(dialect.MySQL, con)
+	db.Client = ent.NewClient(ent.Driver(drv)).Debug()
+	err = db.Client.Schema.Create(context.Background(), migrate.WithDropColumn(true))
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return client, nil
+	return nil
 }
 
-func Client() *ent.Client {
-	return client
+func Provider(conf *config.Config) (*DB, error) {
+	d := NewDB(conf)
+	if err := d.connect(context.Background()); err != nil {
+		return nil, err
+	}
+	return d, nil
 }

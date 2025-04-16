@@ -2,31 +2,27 @@ package fs
 
 import (
 	"bytes"
-	"gitlab.smartbet.am/golang/smart-image/internal/config"
-	"io"
-	"log"
-	"strings"
-	"sync"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/jszwec/s3fs"
+	"gitlab.smartbet.am/golang/smart-image/internal/service/config"
+	"io"
+	"log"
+	"strings"
 )
-
-var once sync.Once
-var cfg *config.Config
 
 type FS struct {
 	*s3fs.S3FS
-	ctx *s3.S3
+	ctx    *s3.S3
+	config *config.Config
 }
 
 func (fs *FS) Write(filename string, data []byte, contentType string) error {
 	cacheControlHeader := "max-age=600"
 	filename = strings.Trim(filename, "/")
 	_, err := fs.ctx.PutObject(&s3.PutObjectInput{
-		Bucket:       aws.String(cfg.AWS_Bucket),
+		Bucket:       aws.String(fs.config.AwsBucket),
 		Key:          aws.String(filename),
 		Body:         bytes.NewReader(data),
 		ContentType:  aws.String(contentType),
@@ -41,7 +37,7 @@ func (fs *FS) Write(filename string, data []byte, contentType string) error {
 func (fs *FS) Delete(filename string) error {
 	filename = strings.Trim(filename, "/")
 	_, err := fs.ctx.DeleteObject(&s3.DeleteObjectInput{
-		Bucket: aws.String(cfg.AWS_Bucket),
+		Bucket: aws.String(fs.config.AwsBucket),
 		Key:    aws.String(filename),
 	})
 	if err != nil {
@@ -64,28 +60,33 @@ func (fs *FS) Read(filename string) ([]byte, error) {
 	return result, nil
 }
 
-var fs *FS
+func (fs *FS) NewOperation(opts ...Option) Operation {
+	op := &operation{
+		fs: fs,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+	return op
+}
 
-func Fs() *FS {
-	once.Do(func() {
-		cfg = config.Get()
-		var bucket = cfg.AWS_Bucket
-		s, err := session.NewSession(
-			&aws.Config{
-				Endpoint:         aws.String(cfg.AWS_S3Host),
-				Region:           aws.String(cfg.AWS_Region),
-				S3ForcePathStyle: aws.Bool(true),
-				DisableSSL:       aws.Bool(true), //delete for prod
-			})
-		if err != nil {
-			log.Fatal(err)
-		}
-		ctx := s3.New(s)
-		fs = &FS{
-			ctx:  ctx,
-			S3FS: s3fs.New(ctx, bucket),
-		}
-	})
+func NewFS(conf *config.Config) *FS {
+	var bucket = conf.AwsBucket
+	s, err := session.NewSession(
+		&aws.Config{
+			Endpoint:         aws.String(conf.AwsS3host),
+			Region:           aws.String(conf.AwsRegion),
+			S3ForcePathStyle: aws.Bool(true),
+			DisableSSL:       aws.Bool(true), //delete for prod
+		})
+	if err != nil {
+		log.Fatal(err)
+	}
+	ctx := s3.New(s)
+	fs := &FS{
+		ctx:    ctx,
+		config: conf,
+		S3FS:   s3fs.New(ctx, bucket),
+	}
 	return fs
-
 }
