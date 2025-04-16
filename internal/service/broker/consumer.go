@@ -31,11 +31,12 @@ type Message struct {
 	Service string          `json:"service"`
 }
 
-func NewConsumer(config *config.Config, processor *processor.Processor, fs *fs.FS) *Consumer {
+func NewConsumer(config *config.Config, processor *processor.Processor, fs *fs.FS, log *logger.Logger) *Consumer {
 	return &Consumer{
 		config:    config,
 		processor: processor,
 		fs:        fs,
+		logger:    log,
 	}
 }
 
@@ -45,6 +46,7 @@ type Consumer struct {
 	processor *processor.Processor
 	fs        *fs.FS
 	db        *db.DB
+	logger    *logger.Logger
 }
 
 func Start(lifecycle fx.Lifecycle, c *Consumer) {
@@ -68,20 +70,20 @@ func (c *Consumer) Close() {
 	if reader != nil {
 		err := reader.Close()
 		if err != nil {
-			logger.Log.Error("Error closing kafka reader", "error", err)
+			c.logger.Error("Error closing kafka reader", "error", err)
 		}
 	}
-	logger.Log.Info("Kafka reader closed")
+	c.logger.Info("Kafka reader closed")
 }
 
 func (c *Consumer) readerInit() (*kafka.Reader, error) {
 
 	_, err := kafka.Dial("tcp", "localhost:9094")
 	if err != nil {
-		logger.Log.Error("Error connecting to kafka broker", "error", err)
+		c.logger.Error("Error connecting to kafka broker", "error", err)
 		return nil, err
 	}
-	logger.Log.Info("Connected to kafka broker", " broker", " localhost:9094")
+	c.logger.Info("Connected to kafka broker", " broker", " localhost:9094")
 
 	brokers := strings.Split(c.config.KafkaBroker, ",")
 	for i := range brokers {
@@ -97,29 +99,29 @@ func (c *Consumer) readerInit() (*kafka.Reader, error) {
 		StartOffset:    kafka.LastOffset,
 		//StartOffset:    kafka.FirstOffset,
 		Logger: kafka.LoggerFunc(func(msg string, args ...interface{}) {
-			logger.Log.Info(fmt.Sprintf(msg, args...))
+			c.logger.Info(fmt.Sprintf(msg, args...))
 		}),
 		ErrorLogger: kafka.LoggerFunc(func(msg string, args ...interface{}) {
-			logger.Log.Error(fmt.Sprintf(msg, args...))
+			c.logger.Error(fmt.Sprintf(msg, args...))
 		}),
 	})
 	return r, nil
 }
 
 func (c *Consumer) start() (err error) {
-	logger.Log.Info("Starting consumer")
+	c.logger.Info("Starting consumer")
 	pool = workerpool.New(10)
 
 	reader, err = c.readerInit()
 	if err != nil {
-		logger.Log.Error("Error initializing kafka reader", "error", err)
+		c.logger.Error("Error initializing kafka reader", "error", err)
 		return err
 	}
 	go func() {
 		for {
 			m, err := reader.ReadMessage(context.Background())
 			if err != nil {
-				logger.Log.Error("Error reading message ", "error ", err)
+				c.logger.Error("Error reading message ", "error ", err)
 				break
 			}
 			c.handleSave(m)
@@ -132,26 +134,26 @@ func (c *Consumer) handleSave(m kafka.Message) {
 	data := m.Value
 	var message Message
 	err := json.Unmarshal(data, &message)
-	logger.Log.Info("Message received ", "data ", string(data))
+	c.logger.Info("Message received ", "data ", string(data))
 
 	if err != nil {
-		logger.Log.Error("Error unmarshalling message", "error", err)
+		c.logger.Error("Error unmarshalling message", "error", err)
 	}
 
 	pool.Submit(func() {
 		info, err := c.db.Image.Query().Where(image.UUID(message.UUID)).First(context.Background())
 		if err != nil {
-			logger.Log.Error("Error updating image ", "uuid ", message.UUID, "error", err)
+			c.logger.Error("Error updating image ", "uuid ", message.UUID, "error", err)
 			return
 		}
 		if info.IsProceed {
-			logger.Log.Info("Image already processed ", "uuid ", message.UUID)
+			c.logger.Info("Image already processed ", "uuid ", message.UUID)
 			return
 		}
 
 		imageRaw, err := c.fs.Read(info.TmpURL)
 		if err != nil {
-			logger.Log.Error("Error reading image ", "tmp_url ", info.TmpURL, "error", err)
+			c.logger.Error("Error reading image ", "tmp_url ", info.TmpURL, "error", err)
 			return
 		}
 
@@ -164,14 +166,14 @@ func (c *Consumer) handleSave(m kafka.Message) {
 				processor.WithOperations(processor.ResizeOperation(message.Size.Width, message.Size.Height)),
 			)
 			if err != nil {
-				logger.Log.Error("Error processing image", "uuid", message.UUID, "error", err)
+				c.logger.Error("Error processing image", "uuid", message.UUID, "error", err)
 				return
 			}
 		}
 
 		ext, err := processor.ReleaseExtension(info.ContentType)
 		if err != nil {
-			logger.Log.Error("Error getting extension", "content_type", info.ContentType, "error", err)
+			c.logger.Error("Error getting extension", "content_type", info.ContentType, "error", err)
 			return
 		}
 
@@ -179,7 +181,7 @@ func (c *Consumer) handleSave(m kafka.Message) {
 
 		err = c.fs.Write(url, imageRaw, info.ContentType)
 		if err != nil {
-			logger.Log.Error("Error writing image", "url", url, "error", err)
+			c.logger.Error("Error writing image", "url", url, "error", err)
 			return
 		}
 
@@ -191,7 +193,7 @@ func (c *Consumer) handleSave(m kafka.Message) {
 			SetNillableSize(size).
 			Exec(context.Background())
 		if err != nil {
-			logger.Log.Error("Error updating image metadata", "uuid", message.UUID, "error", err)
+			c.logger.Error("Error updating image metadata", "uuid", message.UUID, "error", err)
 			return
 		}
 	})

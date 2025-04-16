@@ -6,6 +6,7 @@ import (
 	"gitlab.smartbet.am/golang/smart-image/internal/service/db"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/fs"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/handler"
+	"gitlab.smartbet.am/golang/smart-image/internal/service/logger"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/processor"
 	"gitlab.smartbet.am/golang/smart-image/internal/web/route"
 	"go.uber.org/fx"
@@ -22,6 +23,7 @@ func main() {
 		fx.Supply(serviceName),
 		processor.Module,
 		fx.Provide(
+			logger.NewLogger,
 			config.Provider,
 			db.Provider,
 			broker.NewConsumer,
