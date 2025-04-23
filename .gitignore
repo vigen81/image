@@ -20,3 +20,4 @@ smart-image
 .env
 .idea.idea
 mysql_data
+localstack

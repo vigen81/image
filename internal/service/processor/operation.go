@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"github.com/go-resty/resty/v2"
 )
 
 type (
@@ -35,6 +36,7 @@ type (
 		operations  []Operation
 		image       []byte
 		contentType string
+		client      *resty.Client
 	}
 )
 
@@ -106,7 +108,7 @@ func (p *pipeline) execute() ([]byte, error) {
 	if false == ShouldConvertToWebp(p.contentType) {
 		return p.image, nil
 	}
-	r := Req().R()
+	r := p.client.R()
 	r.SetMultipartField(field, "file", p.contentType, bytes.NewReader(p.image))
 	var data []OperationData
 	for _, op := range p.operations {
@@ -130,8 +132,20 @@ func (p *pipeline) execute() ([]byte, error) {
 	return resp.Body(), nil
 }
 
-func Process(opts ...Option) ([]byte, error) {
-	p := &pipeline{}
+type Processor struct {
+	client *resty.Client
+}
+
+func NewProcessor(client *resty.Client) *Processor {
+	return &Processor{
+		client: client,
+	}
+}
+
+func (processor *Processor) Process(opts ...Option) ([]byte, error) {
+	p := &pipeline{
+		client: processor.client,
+	}
 	for _, opt := range opts {
 		opt(p)
 	}

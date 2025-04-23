@@ -1,11 +1,21 @@
 package main
 
 import (
-	"fmt"
-	"gitlab.smartbet.am/golang/smart-image/internal/config"
+	"context"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/broker"
+	"gitlab.smartbet.am/golang/smart-image/internal/service/config"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/db"
+	"gitlab.smartbet.am/golang/smart-image/internal/service/fs"
+	"gitlab.smartbet.am/golang/smart-image/internal/service/handler"
+	"gitlab.smartbet.am/golang/smart-image/internal/service/logger"
+	"gitlab.smartbet.am/golang/smart-image/internal/service/processor"
 	"gitlab.smartbet.am/golang/smart-image/internal/web/route"
+	"go.uber.org/fx"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 var (
@@ -15,23 +25,50 @@ var (
 
 func main() {
 
-	err := config.Run(serviceName)
+	app := fx.New(
+		fx.Supply(serviceName),
+		processor.Module,
+		fx.Provide(
+			logger.NewLogger,
+			config.Provider,
+			db.Provider,
+			broker.NewConsumer,
+			fs.NewFS,
+			route.NewApp,
+			handler.NewResult,
+		),
+		fx.Invoke(
+			route.StartServer,
+			broker.Start,
+		),
+	)
 
-	hd := route.New()
+	var shutdownTimeout = 5 * time.Second
 
-	_, err = db.Open()
-	if err != nil {
-		panic(err)
-	}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	go func() {
-		err = broker.Consume()
-		if err != nil {
-			fmt.Println(err)
+		if err := app.Start(ctx); err != nil {
+			log.Printf("Failed to start application: %v", err)
+			cancel()
 		}
 	}()
 
-	err = hd.Listen(":8080")
-	if err != nil {
-		return
+	// Handle OS signals
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
+	<-sigChan
+	log.Println("Shutting down gracefully...")
+
+	// Create shutdown context with timeout
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), shutdownTimeout)
+	defer shutdownCancel()
+
+	// Attempt graceful shutdown
+	if err := app.Stop(shutdownCtx); err != nil {
+		log.Printf("Error during shutdown: %v", err)
 	}
+
 }

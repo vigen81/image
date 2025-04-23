@@ -2,34 +2,13 @@ package route
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/google/uuid"
-	"gitlab.smartbet.am/golang/smart-image/internal/service/db"
-	"gitlab.smartbet.am/golang/smart-image/internal/service/fs"
-	"gitlab.smartbet.am/golang/smart-image/internal/service/processor"
-	"net/http"
+	"gitlab.smartbet.am/golang/smart-image/internal/service/handler"
+	"go.uber.org/fx"
 )
 
-type UploadRequest struct {
-	File string `json:"file"`
-}
-type UploadResponse struct {
-	UUID string `json:"uuid"`
-	URL  string `json:"url"`
-}
-
-func routes(app *fiber.App) {
-	api := app.Group("/api")
-	v1 := api.Group("/v1")
-	v1.Post("/upload", Upload)
-
-}
-
-func New() *fiber.App {
-
+func NewApp(result *handler.Result) *fiber.App {
 	app := fiber.New(fiber.Config{
 		Prefork:       false,
 		CaseSensitive: false,
@@ -38,77 +17,26 @@ func New() *fiber.App {
 		AppName:       "Bat Server 1.0",
 	})
 
-	//app.Use(logger.New())
+	app.Static("/", "./static")
+
 	app.Use(cors.New())
-	routes(app)
+
+	api := app.Group("/api")
+	v1 := api.Group("/v1")
+	v1.Post("/upload", result.Upload)
 
 	return app
-
 }
-func Upload(c *fiber.Ctx) error {
-	var u UploadRequest
 
-	if err := c.BodyParser(&u); err != nil {
-		return err
-	}
-
-	if u.File == "" {
-		return errors.New("file is required")
-	}
-
-	dataUrl := processor.NewDataUrl(u.File)
-
-	if err := dataUrl.Parse(); err != nil {
-		return err
-	}
-
-	image, err := dataUrl.Decode()
-
-	if err != nil {
-		return err
-	}
-	if processor.ShouldConvertToWebp(dataUrl.ContentType()) {
-		image, err = processor.Process(
-			processor.WithImage(image),
-			processor.WithContentType(dataUrl.ContentType()),
-			processor.WithOperations(
-				processor.ConvertOperation("webp"),
-				processor.ResizeOperation(1600),
-			))
-		if err != nil {
-			return err
-		}
-	}
-
-	id := uuid.New().String()
-	tmpUrl := fmt.Sprintf("tmp/%s", id)
-	err = fs.NewOperation(
-		fs.WithFilename(tmpUrl),
-		fs.WithFile(image),
-		fs.WithContentType(dataUrl.ContentType()),
-	).Write()
-
-	if err != nil {
-		return err
-	}
-
-	err = db.Client().Image.Create().
-		SetTmpURL(tmpUrl).
-		SetUUID(id).
-		SetContentType(dataUrl.ContentType()).
-		Exec(context.Background())
-
-	if err != nil {
-		deleteError := fs.NewOperation(fs.WithFilename(tmpUrl)).Delete()
-		if deleteError != nil {
-			return err
-		}
-		return err
-	}
-
-	return c.Status(http.StatusOK).JSON(UploadResponse{
-		UUID: id,
-		URL:  tmpUrl,
-	})
-
+func StartServer(lc fx.Lifecycle, app *fiber.App) {
+	lc.Append(
+		fx.Hook{
+			OnStart: func(ctx context.Context) error {
+				go app.Listen(":8080")
+				return nil
+			},
+			OnStop: func(ctx context.Context) error {
+				return app.Shutdown()
+			},
+		})
 }
