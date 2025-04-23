@@ -1,53 +1,32 @@
 variables:
   HELM_PATH: helm/base/apps/smart-image/api
-  MIGRATION_SCRIPT: "echo test"
   AWS_SECRET: /dev/smart-image
 
 stages:
-  - build
-  - migration
-  - deploy
+  - dev:kubernetes
+  - prod:build
+  - prod:deploy
 
 include:
   - project: 'devops/templates'
     ref: 'main'
     file:
-      - 'arm-build-ci.yml'
-      - 'arm-migration-ci.yml'
-      - 'arm-deploy-ci.yml'
+      - 'dev-arm-ci.yml'
+      - 'prod-arm-build.yml'
+      - 'prod-arm-deploy.yml'
 
-build:
-  stage: build
+dev:kubernetes:
   only:
-    - dev
-    - main
+  - dev
 
-dev:migration:
-  stage: migration
-  needs:
-    - build
-  only:
-    - dev
-
-dev:deploy:
-  stage: deploy
-  needs:
-    - dev:migration
-  only:
-    - dev
-
-prod:migration:
-  stage: migration
-  when: manual
-  needs:
-    - build
-  only:
-    - main
+prod:build:
+    stage: prod:build
+    when: manual
+    only:
+       - main
 
 prod:deploy:
-  stage: deploy
-  when: manual
-  needs:
-    - prod:migration
-  only:
-    - main
+    stage: prod:deploy
+    when: manual
+    only:
+       - main
