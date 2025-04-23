@@ -1,0 +1,53 @@
+variables:
+  HELM_PATH: helm/base/apps/smart-image/api
+  MIGRATION_SCRIPT: ""
+  AWS_SECRET: /dev/smart-image
+
+stages:
+  - build
+  - migration
+  - deploy
+
+include:
+  - project: 'devops/templates'
+    ref: 'main'
+    file:
+      - 'arm-build-ci.yml'
+      - 'arm-migration-ci.yml'
+      - 'arm-deploy-ci.yml'
+
+build:
+  stage: build
+  only:
+    - dev
+    - main
+
+dev:migration:
+  stage: migration
+  needs:
+    - build
+  only:
+    - dev
+
+dev:deploy:
+  stage: deploy
+  needs:
+    - dev:migration
+  only:
+    - dev
+
+prod:migration:
+  stage: migration
+  when: manual
+  needs:
+    - build
+  only:
+    - main
+
+prod:deploy:
+  stage: deploy
+  when: manual
+  needs:
+    - prod:migration
+  only:
+    - main
