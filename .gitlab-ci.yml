@@ -1,6 +1,6 @@
 variables:
   HELM_PATH: helm/base/apps/smart-image/api
-  MIGRATION_SCRIPT: ""
+  MIGRATION_SCRIPT: "echo test"
   AWS_SECRET: /dev/smart-image
 
 stages:
