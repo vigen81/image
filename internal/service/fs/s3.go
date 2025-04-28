@@ -9,6 +9,7 @@ import (
 	"gitlab.smartbet.am/golang/smart-image/internal/service/config"
 	"io"
 	"log"
+	"os"
 	"strings"
 )
 
@@ -72,13 +73,25 @@ func (fs *FS) NewOperation(opts ...Option) Operation {
 
 func NewFS(conf *config.Config) *FS {
 	var bucket = conf.AwsBucket
-	s, err := session.NewSession(
-		&aws.Config{
-			Endpoint:         aws.String(conf.AwsS3host),
-			Region:           aws.String(conf.AwsRegion),
-			S3ForcePathStyle: aws.Bool(true),
-			DisableSSL:       aws.Bool(true), //delete for prod
-		})
+	var s *session.Session
+	var err error
+	if os.Getenv("POD_ENV") == "local" {
+		bucket = "smart-image"
+		s, err = session.NewSession(
+			&aws.Config{
+				Endpoint:         aws.String(conf.AwsS3host),
+				Region:           aws.String(conf.AwsRegion),
+				S3ForcePathStyle: aws.Bool(true),
+				DisableSSL:       aws.Bool(true), //delete for prod
+			})
+
+	} else {
+		s, err = session.NewSession(
+			&aws.Config{
+				Region: aws.String(conf.AwsRegion),
+			})
+	}
+
 	if err != nil {
 		log.Fatal(err)
 	}
