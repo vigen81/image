@@ -85,7 +85,7 @@ func (c *Consumer) Close() {
 
 func (c *Consumer) readerInit() (*kafka.Reader, error) {
 
-	_, err := kafka.Dial("tcp", "localhost:9094")
+	_, err := kafka.Dial("tcp", c.config.KafkaBroker)
 	if err != nil {
 		c.logger.Error("Error connecting to kafka broker", "error", err)
 		return nil, err
