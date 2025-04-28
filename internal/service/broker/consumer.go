@@ -90,7 +90,7 @@ func (c *Consumer) readerInit() (*kafka.Reader, error) {
 		c.logger.Error("Error connecting to kafka broker", "error", err)
 		return nil, err
 	}
-	c.logger.Info("Connected to kafka broker", " broker", " localhost:9094")
+	c.logger.Info("Connected to kafka broker", " broker", c.config.KafkaBroker)
 
 	brokers := strings.Split(c.config.KafkaBroker, ",")
 	for i := range brokers {

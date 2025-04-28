@@ -1,4 +1,4 @@
-POST http://127.0.0.1:8080/api/v1/upload
+POST http://smart-image:80/api/v1/upload
 Content-Type: application/json
 Authorization: 1c0ec4b1-6fd7-477c-8474-eead58164db6
 
@@ -8,7 +8,7 @@ Authorization: 1c0ec4b1-6fd7-477c-8474-eead58164db6
 
 
 ###
-POST http://127.0.0.1:8080/upload
+POST http://smart-image:80/upload
 Content-Type: application/json
 
 {
