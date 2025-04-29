@@ -262,12 +262,12 @@ func (iq *ImageQuery) Clone() *ImageQuery {
 // Example:
 //
 //	var v []struct {
-//		CreateTime time.Time `json:"create_time,omitempty"`
+//		UUID string `json:"uuid,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Image.Query().
-//		GroupBy(image.FieldCreateTime).
+//		GroupBy(image.FieldUUID).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (iq *ImageQuery) GroupBy(field string, fields ...string) *ImageGroupBy {
@@ -285,11 +285,11 @@ func (iq *ImageQuery) GroupBy(field string, fields ...string) *ImageGroupBy {
 // Example:
 //
 //	var v []struct {
-//		CreateTime time.Time `json:"create_time,omitempty"`
+//		UUID string `json:"uuid,omitempty"`
 //	}
 //
 //	client.Image.Query().
-//		Select(image.FieldCreateTime).
+//		Select(image.FieldUUID).
 //		Scan(ctx, &v)
 func (iq *ImageQuery) Select(fields ...string) *ImageSelect {
 	iq.ctx.Fields = append(iq.ctx.Fields, fields...)

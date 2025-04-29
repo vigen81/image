@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -26,12 +25,6 @@ type ImageUpdate struct {
 // Where appends a list predicates to the ImageUpdate builder.
 func (iu *ImageUpdate) Where(ps ...predicate.Image) *ImageUpdate {
 	iu.mutation.Where(ps...)
-	return iu
-}
-
-// SetUpdateTime sets the "update_time" field.
-func (iu *ImageUpdate) SetUpdateTime(t time.Time) *ImageUpdate {
-	iu.mutation.SetUpdateTime(t)
 	return iu
 }
 
@@ -212,7 +205,6 @@ func (iu *ImageUpdate) Mutation() *ImageMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (iu *ImageUpdate) Save(ctx context.Context) (int, error) {
-	iu.defaults()
 	return withHooks(ctx, iu.sqlSave, iu.mutation, iu.hooks)
 }
 
@@ -238,14 +230,6 @@ func (iu *ImageUpdate) ExecX(ctx context.Context) {
 	}
 }
 
-// defaults sets the default values of the builder before save.
-func (iu *ImageUpdate) defaults() {
-	if _, ok := iu.mutation.UpdateTime(); !ok {
-		v := image.UpdateDefaultUpdateTime()
-		iu.mutation.SetUpdateTime(v)
-	}
-}
-
 func (iu *ImageUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := sqlgraph.NewUpdateSpec(image.Table, image.Columns, sqlgraph.NewFieldSpec(image.FieldID, field.TypeInt))
 	if ps := iu.mutation.predicates; len(ps) > 0 {
@@ -254,9 +238,6 @@ func (iu *ImageUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := iu.mutation.UpdateTime(); ok {
-		_spec.SetField(image.FieldUpdateTime, field.TypeTime, value)
 	}
 	if value, ok := iu.mutation.UUID(); ok {
 		_spec.SetField(image.FieldUUID, field.TypeString, value)
@@ -321,12 +302,6 @@ type ImageUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *ImageMutation
-}
-
-// SetUpdateTime sets the "update_time" field.
-func (iuo *ImageUpdateOne) SetUpdateTime(t time.Time) *ImageUpdateOne {
-	iuo.mutation.SetUpdateTime(t)
-	return iuo
 }
 
 // SetUUID sets the "uuid" field.
@@ -519,7 +494,6 @@ func (iuo *ImageUpdateOne) Select(field string, fields ...string) *ImageUpdateOn
 
 // Save executes the query and returns the updated Image entity.
 func (iuo *ImageUpdateOne) Save(ctx context.Context) (*Image, error) {
-	iuo.defaults()
 	return withHooks(ctx, iuo.sqlSave, iuo.mutation, iuo.hooks)
 }
 
@@ -542,14 +516,6 @@ func (iuo *ImageUpdateOne) Exec(ctx context.Context) error {
 func (iuo *ImageUpdateOne) ExecX(ctx context.Context) {
 	if err := iuo.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (iuo *ImageUpdateOne) defaults() {
-	if _, ok := iuo.mutation.UpdateTime(); !ok {
-		v := image.UpdateDefaultUpdateTime()
-		iuo.mutation.SetUpdateTime(v)
 	}
 }
 
@@ -578,9 +544,6 @@ func (iuo *ImageUpdateOne) sqlSave(ctx context.Context) (_node *Image, err error
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := iuo.mutation.UpdateTime(); ok {
-		_spec.SetField(image.FieldUpdateTime, field.TypeTime, value)
 	}
 	if value, ok := iuo.mutation.UUID(); ok {
 		_spec.SetField(image.FieldUUID, field.TypeString, value)

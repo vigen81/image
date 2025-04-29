@@ -3,7 +3,6 @@ package schema
 import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
-	"entgo.io/ent/schema/mixin"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/processor"
 )
 
@@ -25,12 +24,6 @@ func (Image) Fields() []ent.Field {
 		field.Bool("is_deleted").Default(false),
 		field.String("content_type"),
 		field.JSON("size", processor.Size{}).Optional(),
-	}
-}
-
-func (Image) Mixin() []ent.Mixin {
-	return []ent.Mixin{
-		mixin.Time{},
 	}
 }
 
