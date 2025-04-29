@@ -31,7 +31,7 @@ type Message struct {
 	Service string          `json:"service"`
 }
 
-func NewConsumer(config *config.Config, processor *processor.Processor, fs *fs.FS, log *logger.Logger) *Consumer {
+func NewConsumer(config *config.Config, db *db.DB, processor *processor.Processor, fs *fs.FS, log *logger.Logger) *Consumer {
 	ctx, fn := context.WithCancel(context.Background())
 
 	return &Consumer{
@@ -41,6 +41,7 @@ func NewConsumer(config *config.Config, processor *processor.Processor, fs *fs.F
 		logger:    log,
 		ctx:       ctx,
 		cancel:    fn,
+		db:        db,
 	}
 }
 
