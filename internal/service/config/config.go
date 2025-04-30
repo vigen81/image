@@ -5,9 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"gitlab.smartbet.am/golang/smart-image/internal/plugin/ams"
+	"gitlab.smartbet.am/golang/smart-image/internal/service/logger"
 	"go.uber.org/fx"
 	"os"
 )
+
+//"db_host": "dev-aurora-cluster.cluster-cj1393vjusxp.eu-central-1.rds.amazonaws.com",
+//"db_user": "privatedbuser",
+//"db_password": "tRgtVF6TgZXGm6ZK",
 
 const mockConfig = `{
 	"db_port": "3306",
@@ -21,7 +26,8 @@ const mockConfig = `{
 	"imaginary": "localhost:9000",
 	"aws_bucket": "smart-image",
 	"aws_region": "us-east-1",
-	"aws_s3_host": "127.0.0.1:4566"
+	"aws_s3_host": "127.0.0.1:4566",
+	"auth_host": "http://control-api/api/check-auth-user"
 }`
 
 type Config struct {
@@ -37,6 +43,7 @@ type Config struct {
 	AwsBucket   string `json:"aws_bucket"`
 	AwsRegion   string `json:"aws_region"`
 	AwsS3host   string `json:"aws_s3_host"`
+	AuthHost    string `json:"auth_host"`
 }
 
 func (cnf *Config) run(serviceName string) error {
@@ -59,10 +66,11 @@ func (cnf *Config) run(serviceName string) error {
 	return err
 }
 
-func Provider(lifecycle fx.Lifecycle, serviceName string) *Config {
+func Provider(lifecycle fx.Lifecycle, serviceName string, log *logger.Logger) *Config {
 	c := &Config{}
 	//serviceName := "smart-image"
 	err := c.run(serviceName)
+	log.Warn("config11 ", c)
 	lifecycle.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			return err
