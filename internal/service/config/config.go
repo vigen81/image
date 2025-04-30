@@ -10,24 +10,19 @@ import (
 	"os"
 )
 
-//"db_host": "dev-aurora-cluster.cluster-cj1393vjusxp.eu-central-1.rds.amazonaws.com",
-//"db_user": "privatedbuser",
-//"db_password": "tRgtVF6TgZXGm6ZK",
-
 const mockConfig = `{
+	"db_host": "dev-aurora-cluster.cluster-cj1393vjusxp.eu-central-1.rds.amazonaws.com",
+    "db_user": "privatedbuser",
+	"db_password": "tRgtVF6TgZXGm6ZK",
 	"db_port": "3306",
-	"db_host": "localhost",
-	"db_user": "root",
-	"db_password": "123456!",
-	"db_name": "smart_image",
+	"db_name": "smart-image",
 	"api_key": "mock-secret-key",
 	"kafka_topic": "smart_image",
 	"kafka_broker": "localhost:9094",
 	"imaginary": "localhost:9000",
 	"aws_bucket": "smart-image",
 	"aws_region": "us-east-1",
-	"aws_s3_host": "127.0.0.1:4566",
-	"auth_host": "http://control-api/api/check-auth-user"
+	"aws_s3_host": "127.0.0.1:4566"
 }`
 
 type Config struct {
@@ -43,7 +38,6 @@ type Config struct {
 	AwsBucket   string `json:"aws_bucket"`
 	AwsRegion   string `json:"aws_region"`
 	AwsS3host   string `json:"aws_s3_host"`
-	AuthHost    string `json:"auth_host"`
 }
 
 func (cnf *Config) run(serviceName string) error {

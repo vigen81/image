@@ -23,7 +23,7 @@ func (a *AuthMiddleware) Handle(c *fiber.Ctx) error {
 		})
 	}
 
-	req, err := http.NewRequest("POST", a.cfg.AuthHost, nil)
+	req, err := http.NewRequest("POST", "http://control-api/api/check-auth-user", nil)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "auth request failed"})
 	}
@@ -31,6 +31,7 @@ func (a *AuthMiddleware) Handle(c *fiber.Ctx) error {
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
+
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "auth service unreachable"})
 	}
 	defer resp.Body.Close()
