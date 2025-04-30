@@ -1,18 +1,22 @@
 package middleware
 
 import (
+	"github.com/go-resty/resty/v2"
 	"github.com/gofiber/fiber/v2"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/config"
-	"io"
-	"net/http"
 )
 
 type AuthMiddleware struct {
-	cfg *config.Config
+	cfg    *config.Config
+	client *resty.Client
 }
 
 func NewAuthMiddleware(cfg *config.Config) *AuthMiddleware {
-	return &AuthMiddleware{cfg: cfg}
+	client := resty.New()
+	return &AuthMiddleware{
+		cfg:    cfg,
+		client: client,
+	}
 }
 
 func (a *AuthMiddleware) Handle(c *fiber.Ctx) error {
@@ -23,26 +27,18 @@ func (a *AuthMiddleware) Handle(c *fiber.Ctx) error {
 		})
 	}
 
-	req, err := http.NewRequest("POST", "http://control-api/api/check-auth-user", nil)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "auth request failed"})
-	}
-	req.Header.Set("Authorization", "Bearer "+token)
+	resp, err := a.client.R().
+		SetHeader("Authorization", "Bearer "+token).
+		Post("http://control-api/api/check-auth-user")
 
-	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "auth service unreachable"})
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "failed to read auth response"})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "auth service unreachable",
+		})
 	}
 
-	if resp.StatusCode != http.StatusOK {
-		return c.Status(fiber.StatusUnauthorized).Send(body)
+	if resp.StatusCode() != fiber.StatusOK {
+		return c.Status(fiber.StatusUnauthorized).Send(resp.Body())
 	}
 
 	return c.Next()
