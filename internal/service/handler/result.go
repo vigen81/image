@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
@@ -9,7 +10,7 @@ import (
 	"gitlab.smartbet.am/golang/smart-image/internal/service/db"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/fs"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/processor"
-	"net/http"
+	"strings"
 )
 
 type UploadRequest struct {
@@ -27,74 +28,96 @@ type Result struct {
 }
 
 func (r *Result) Upload(c *fiber.Ctx) error {
-	var u UploadRequest
-
-	if err := c.BodyParser(&u); err != nil {
+	var req UploadRequest
+	if err := c.BodyParser(&req); err != nil {
+		return err
+	}
+	if err := validateUploadRequest(req); err != nil {
 		return err
 	}
 
-	if u.File == "" {
+	dataURL := processor.NewDataUrl(req.File)
+	if err := dataURL.Parse(); err != nil {
+		return err
+	}
+
+	contentType := dataURL.ContentType()
+	id := uuid.New().String()
+	tmpPath := fmt.Sprintf("tmp/%s", id)
+
+	fileBytes, err := getFileBytes(r.processor, dataURL, req.File, contentType)
+	if err != nil {
+		return err
+	}
+
+	if err := saveToFS(r.fs, tmpPath, fileBytes, contentType); err != nil {
+		return err
+	}
+
+	if err := saveToDB(r.db, id, tmpPath, contentType); err != nil {
+		// Rollback filesystem on DB error
+		_ = r.fs.NewOperation(fs.WithFilename(tmpPath)).Delete()
+		return err
+	}
+
+	return c.Status(fiber.StatusOK).JSON(UploadResponse{UUID: id, URL: tmpPath})
+}
+
+func validateUploadRequest(req UploadRequest) error {
+	if req.File == "" {
 		return errors.New("file is required")
 	}
-
-	if len(u.File) > 6*1024*1024 {
+	if len(req.File) > 6*1024*1024 {
 		return errors.New("file size is too large")
 	}
-	dataUrl := processor.NewDataUrl(u.File)
+	return nil
+}
 
-	if err := dataUrl.Parse(); err != nil {
-		return err
-	}
-
-	image, err := dataUrl.Decode()
-
-	if err != nil {
-		return err
-	}
-	if processor.ShouldConvertToWebp(dataUrl.ContentType()) {
-		image, err = r.processor.Process(
-			processor.WithImage(image),
-			processor.WithContentType(dataUrl.ContentType()),
-			processor.WithOperations(
-				processor.ConvertOperation("webp"),
-				processor.ResizeOperation(1600),
-			))
+func getFileBytes(p *processor.Processor, dataURL *processor.DataUrl, rawData, contentType string) ([]byte, error) {
+	if processor.IsImage(contentType) {
+		imgBytes, err := dataURL.Decode()
 		if err != nil {
-			return err
+			return nil, err
 		}
+		if processor.ShouldConvertToWebp(contentType) {
+			imgBytes, err = p.Process(
+				processor.WithImage(imgBytes),
+				processor.WithContentType(contentType),
+				processor.WithOperations(
+					processor.ConvertOperation("webp"),
+					processor.ResizeOperation(1600),
+				),
+			)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return imgBytes, nil
+	} else if processor.IsVideo(contentType) {
+		parts := strings.SplitN(rawData, ",", 2)
+		if len(parts) != 2 {
+			return nil, errors.New("invalid data URL")
+		}
+		return base64.StdEncoding.DecodeString(parts[1])
 	}
 
-	id := uuid.New().String()
-	tmpUrl := fmt.Sprintf("tmp/%s", id)
-	err = r.fs.NewOperation(
-		fs.WithFilename(tmpUrl),
-		fs.WithFile(image),
-		fs.WithContentType(dataUrl.ContentType()),
+	return nil, fmt.Errorf("unsupported content type: %s", contentType)
+}
+
+func saveToFS(fsClient *fs.FS, path string, data []byte, contentType string) error {
+	return fsClient.NewOperation(
+		fs.WithFilename(path),
+		fs.WithFile(data),
+		fs.WithContentType(contentType),
 	).Write()
+}
 
-	if err != nil {
-		return err
-	}
-
-	err = r.db.Image.Create().
-		SetTmpURL(tmpUrl).
+func saveToDB(dbClient *db.DB, id, tmpPath, contentType string) error {
+	return dbClient.Image.Create().
+		SetTmpURL(tmpPath).
 		SetUUID(id).
-		SetContentType(dataUrl.ContentType()).
+		SetContentType(contentType).
 		Exec(context.Background())
-
-	if err != nil {
-		deleteError := r.fs.NewOperation(fs.WithFilename(tmpUrl)).Delete()
-		if deleteError != nil {
-			return err
-		}
-		return err
-	}
-
-	return c.Status(http.StatusOK).JSON(UploadResponse{
-		UUID: id,
-		URL:  tmpUrl,
-	})
-
 }
 
 func NewResult(processor *processor.Processor, fs *fs.FS, db *db.DB) *Result {
