@@ -1,4 +1,4 @@
-FROM 499144353299.dkr.ecr.eu-central-1.amazonaws.com/docker-hub/library/golang:1.23-alpine AS builder
+FROM 499144353299.dkr.ecr.eu-central-1.amazonaws.com/docker-hub/library/golang:1.24.1 AS builder
 
 # Set Go env
 ENV CGO_ENABLED=0 GOOS=linux
