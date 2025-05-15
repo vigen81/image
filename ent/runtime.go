@@ -3,8 +3,6 @@
 package ent
 
 import (
-	"time"
-
 	"gitlab.smartbet.am/golang/smart-image/ent/image"
 	"gitlab.smartbet.am/golang/smart-image/ent/schema"
 )
@@ -13,21 +11,8 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
-	imageMixin := schema.Image{}.Mixin()
-	imageMixinFields0 := imageMixin[0].Fields()
-	_ = imageMixinFields0
 	imageFields := schema.Image{}.Fields()
 	_ = imageFields
-	// imageDescCreateTime is the schema descriptor for create_time field.
-	imageDescCreateTime := imageMixinFields0[0].Descriptor()
-	// image.DefaultCreateTime holds the default value on creation for the create_time field.
-	image.DefaultCreateTime = imageDescCreateTime.Default.(func() time.Time)
-	// imageDescUpdateTime is the schema descriptor for update_time field.
-	imageDescUpdateTime := imageMixinFields0[1].Descriptor()
-	// image.DefaultUpdateTime holds the default value on creation for the update_time field.
-	image.DefaultUpdateTime = imageDescUpdateTime.Default.(func() time.Time)
-	// image.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
-	image.UpdateDefaultUpdateTime = imageDescUpdateTime.UpdateDefault.(func() time.Time)
 	// imageDescIsProceed is the schema descriptor for is_proceed field.
 	imageDescIsProceed := imageFields[6].Descriptor()
 	// image.DefaultIsProceed holds the default value on creation for the is_proceed field.

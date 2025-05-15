@@ -1,0 +1,32 @@
+variables:
+  HELM_PATH: helm/base/apps/smart-image/api
+  AWS_SECRET: /dev/smart-image
+
+stages:
+  - dev:kubernetes
+  - prod:build
+  - prod:deploy
+
+include:
+  - project: 'devops/templates'
+    ref: 'main'
+    file:
+      - 'dev-arm-ci.yml'
+      - 'prod-arm-build.yml'
+      - 'prod-arm-deploy.yml'
+
+dev:kubernetes:
+  only:
+  - dev
+
+prod:build:
+    stage: prod:build
+    when: manual
+    only:
+       - main
+
+prod:deploy:
+    stage: prod:deploy
+    when: manual
+    only:
+       - main

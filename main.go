@@ -9,6 +9,7 @@ import (
 	"gitlab.smartbet.am/golang/smart-image/internal/service/handler"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/logger"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/processor"
+	"gitlab.smartbet.am/golang/smart-image/internal/web/middleware"
 	"gitlab.smartbet.am/golang/smart-image/internal/web/route"
 	"go.uber.org/fx"
 	"log"
@@ -36,6 +37,7 @@ func main() {
 			fs.NewFS,
 			route.NewApp,
 			handler.NewResult,
+			middleware.NewAuthMiddleware,
 		),
 		fx.Invoke(
 			route.StartServer,

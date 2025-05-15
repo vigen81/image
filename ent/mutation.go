@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"sync"
-	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -34,8 +33,6 @@ type ImageMutation struct {
 	op            Op
 	typ           string
 	id            *int
-	create_time   *time.Time
-	update_time   *time.Time
 	uuid          *string
 	url           *string
 	object_id     *string
@@ -148,78 +145,6 @@ func (m *ImageMutation) IDs(ctx context.Context) ([]int, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
-}
-
-// SetCreateTime sets the "create_time" field.
-func (m *ImageMutation) SetCreateTime(t time.Time) {
-	m.create_time = &t
-}
-
-// CreateTime returns the value of the "create_time" field in the mutation.
-func (m *ImageMutation) CreateTime() (r time.Time, exists bool) {
-	v := m.create_time
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCreateTime returns the old "create_time" field's value of the Image entity.
-// If the Image object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ImageMutation) OldCreateTime(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCreateTime is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCreateTime requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreateTime: %w", err)
-	}
-	return oldValue.CreateTime, nil
-}
-
-// ResetCreateTime resets all changes to the "create_time" field.
-func (m *ImageMutation) ResetCreateTime() {
-	m.create_time = nil
-}
-
-// SetUpdateTime sets the "update_time" field.
-func (m *ImageMutation) SetUpdateTime(t time.Time) {
-	m.update_time = &t
-}
-
-// UpdateTime returns the value of the "update_time" field in the mutation.
-func (m *ImageMutation) UpdateTime() (r time.Time, exists bool) {
-	v := m.update_time
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUpdateTime returns the old "update_time" field's value of the Image entity.
-// If the Image object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ImageMutation) OldUpdateTime(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUpdateTime is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUpdateTime requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUpdateTime: %w", err)
-	}
-	return oldValue.UpdateTime, nil
-}
-
-// ResetUpdateTime resets all changes to the "update_time" field.
-func (m *ImageMutation) ResetUpdateTime() {
-	m.update_time = nil
 }
 
 // SetUUID sets the "uuid" field.
@@ -681,13 +606,7 @@ func (m *ImageMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ImageMutation) Fields() []string {
-	fields := make([]string, 0, 12)
-	if m.create_time != nil {
-		fields = append(fields, image.FieldCreateTime)
-	}
-	if m.update_time != nil {
-		fields = append(fields, image.FieldUpdateTime)
-	}
+	fields := make([]string, 0, 10)
 	if m.uuid != nil {
 		fields = append(fields, image.FieldUUID)
 	}
@@ -726,10 +645,6 @@ func (m *ImageMutation) Fields() []string {
 // schema.
 func (m *ImageMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case image.FieldCreateTime:
-		return m.CreateTime()
-	case image.FieldUpdateTime:
-		return m.UpdateTime()
 	case image.FieldUUID:
 		return m.UUID()
 	case image.FieldURL:
@@ -759,10 +674,6 @@ func (m *ImageMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *ImageMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case image.FieldCreateTime:
-		return m.OldCreateTime(ctx)
-	case image.FieldUpdateTime:
-		return m.OldUpdateTime(ctx)
 	case image.FieldUUID:
 		return m.OldUUID(ctx)
 	case image.FieldURL:
@@ -792,20 +703,6 @@ func (m *ImageMutation) OldField(ctx context.Context, name string) (ent.Value, e
 // type.
 func (m *ImageMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case image.FieldCreateTime:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCreateTime(v)
-		return nil
-	case image.FieldUpdateTime:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUpdateTime(v)
-		return nil
 	case image.FieldUUID:
 		v, ok := value.(string)
 		if !ok {
@@ -958,12 +855,6 @@ func (m *ImageMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *ImageMutation) ResetField(name string) error {
 	switch name {
-	case image.FieldCreateTime:
-		m.ResetCreateTime()
-		return nil
-	case image.FieldUpdateTime:
-		m.ResetUpdateTime()
-		return nil
 	case image.FieldUUID:
 		m.ResetUUID()
 		return nil

@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -19,34 +18,6 @@ type ImageCreate struct {
 	config
 	mutation *ImageMutation
 	hooks    []Hook
-}
-
-// SetCreateTime sets the "create_time" field.
-func (ic *ImageCreate) SetCreateTime(t time.Time) *ImageCreate {
-	ic.mutation.SetCreateTime(t)
-	return ic
-}
-
-// SetNillableCreateTime sets the "create_time" field if the given value is not nil.
-func (ic *ImageCreate) SetNillableCreateTime(t *time.Time) *ImageCreate {
-	if t != nil {
-		ic.SetCreateTime(*t)
-	}
-	return ic
-}
-
-// SetUpdateTime sets the "update_time" field.
-func (ic *ImageCreate) SetUpdateTime(t time.Time) *ImageCreate {
-	ic.mutation.SetUpdateTime(t)
-	return ic
-}
-
-// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
-func (ic *ImageCreate) SetNillableUpdateTime(t *time.Time) *ImageCreate {
-	if t != nil {
-		ic.SetUpdateTime(*t)
-	}
-	return ic
 }
 
 // SetUUID sets the "uuid" field.
@@ -200,14 +171,6 @@ func (ic *ImageCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (ic *ImageCreate) defaults() {
-	if _, ok := ic.mutation.CreateTime(); !ok {
-		v := image.DefaultCreateTime()
-		ic.mutation.SetCreateTime(v)
-	}
-	if _, ok := ic.mutation.UpdateTime(); !ok {
-		v := image.DefaultUpdateTime()
-		ic.mutation.SetUpdateTime(v)
-	}
 	if _, ok := ic.mutation.IsProceed(); !ok {
 		v := image.DefaultIsProceed
 		ic.mutation.SetIsProceed(v)
@@ -220,12 +183,6 @@ func (ic *ImageCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (ic *ImageCreate) check() error {
-	if _, ok := ic.mutation.CreateTime(); !ok {
-		return &ValidationError{Name: "create_time", err: errors.New(`ent: missing required field "Image.create_time"`)}
-	}
-	if _, ok := ic.mutation.UpdateTime(); !ok {
-		return &ValidationError{Name: "update_time", err: errors.New(`ent: missing required field "Image.update_time"`)}
-	}
 	if _, ok := ic.mutation.UUID(); !ok {
 		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "Image.uuid"`)}
 	}
@@ -267,14 +224,6 @@ func (ic *ImageCreate) createSpec() (*Image, *sqlgraph.CreateSpec) {
 		_node = &Image{config: ic.config}
 		_spec = sqlgraph.NewCreateSpec(image.Table, sqlgraph.NewFieldSpec(image.FieldID, field.TypeInt))
 	)
-	if value, ok := ic.mutation.CreateTime(); ok {
-		_spec.SetField(image.FieldCreateTime, field.TypeTime, value)
-		_node.CreateTime = value
-	}
-	if value, ok := ic.mutation.UpdateTime(); ok {
-		_spec.SetField(image.FieldUpdateTime, field.TypeTime, value)
-		_node.UpdateTime = value
-	}
 	if value, ok := ic.mutation.UUID(); ok {
 		_spec.SetField(image.FieldUUID, field.TypeString, value)
 		_node.UUID = value

@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
-	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -19,10 +18,6 @@ type Image struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
-	// CreateTime holds the value of the "create_time" field.
-	CreateTime time.Time `json:"create_time,omitempty"`
-	// UpdateTime holds the value of the "update_time" field.
-	UpdateTime time.Time `json:"update_time,omitempty"`
 	// UUID holds the value of the "uuid" field.
 	UUID string `json:"uuid,omitempty"`
 	// URL holds the value of the "url" field.
@@ -59,8 +54,6 @@ func (*Image) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case image.FieldUUID, image.FieldURL, image.FieldObjectID, image.FieldTmpURL, image.FieldService, image.FieldType, image.FieldContentType:
 			values[i] = new(sql.NullString)
-		case image.FieldCreateTime, image.FieldUpdateTime:
-			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -82,18 +75,6 @@ func (i *Image) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			i.ID = int(value.Int64)
-		case image.FieldCreateTime:
-			if value, ok := values[j].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field create_time", values[j])
-			} else if value.Valid {
-				i.CreateTime = value.Time
-			}
-		case image.FieldUpdateTime:
-			if value, ok := values[j].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field update_time", values[j])
-			} else if value.Valid {
-				i.UpdateTime = value.Time
-			}
 		case image.FieldUUID:
 			if value, ok := values[j].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field uuid", values[j])
@@ -192,12 +173,6 @@ func (i *Image) String() string {
 	var builder strings.Builder
 	builder.WriteString("Image(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", i.ID))
-	builder.WriteString("create_time=")
-	builder.WriteString(i.CreateTime.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("update_time=")
-	builder.WriteString(i.UpdateTime.Format(time.ANSIC))
-	builder.WriteString(", ")
 	builder.WriteString("uuid=")
 	builder.WriteString(i.UUID)
 	builder.WriteString(", ")
