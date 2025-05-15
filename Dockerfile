@@ -5,7 +5,7 @@ ENV CGO_ENABLED=0 GOOS=linux
 WORKDIR /go/src/smart-image
 
 # Install dependencies
-RUN apk --update --no-cache add ca-certificates gcc libtool make musl-dev protoc git
+RUN apt-get update && apt-get install -y ca-certificates gcc libtool make protobuf-compiler git && rm -rf /var/lib/apt/lists/*
 
 # Build Go binary
 COPY Makefile go.mod go.sum ./
