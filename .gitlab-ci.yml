@@ -27,8 +27,12 @@ dev:kubernetes:
 prod:build:
   stage: prod:build
   when: manual
-  only:
-      - main
+  rules:
+    - if: '$CI_COMMIT_BRANCH  == "main"'
+      variables:
+        DOCKER_REPOSITORY: "smart-image"
+      when: always
+    - when: never
 
 prod:deploy:
   stage: prod:deploy
