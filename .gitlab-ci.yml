@@ -3,65 +3,35 @@ variables:
   AWS_SECRET: /dev/smart-image
 
 stages:
-  - build
-  - migration
-  - deploy
+  - dev:kubernetes
+  - prod:build
+  - prod:deploy
 
 include:
   - project: 'devops/templates'
     ref: 'main'
     file:
-      - 'arm-build-ci.yml'
-      - 'arm-migration-ci.yml'
-      - 'arm-deploy-ci.yml'
+      - 'dev-arm-ci.yml'
+      - 'prod-arm-build.yml'
+      - 'prod-arm-deploy.yml'
 
-build:
+dev:kubernetes:
   stage: build
   rules:
     - if: '$CI_COMMIT_BRANCH  == "dev"'
       variables:
         DOCKER_REPOSITORY: "smart-image-dev"
       when: always
-    - if: '$CI_COMMIT_BRANCH  == "main"'
-      variables:
-        DOCKER_REPOSITORY: "smart-image"
-      when: always
     - when: never
 
-dev:migration:
-  stage: migration
-  needs:
-    - build
-  rules:
-    - if: '$CI_COMMIT_BRANCH  == "dev"'
-      variables:
-        DOCKER_REPOSITORY: "smart-image-dev"
-      when: always
-    - when: never
-
-dev:deploy:
-  stage: deploy
-  needs:
-    - dev:migration
-  only:
-    - dev
-
-prod:migration:
-  stage: migration
-  when: manual
-  needs:
-    - build
-  rules:
-    - if: '$CI_COMMIT_BRANCH  == "master"'
-      variables:
-        DOCKER_REPOSITORY: "smart-image"
-      when: always
-    - when: never
+prod:build:
+    stage: prod:build
+    when: manual
+    only:
+       - main
 
 prod:deploy:
   stage: deploy
   when: manual
-  needs:
-    - prod:migration
   only:
     - main
