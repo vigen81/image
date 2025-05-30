@@ -16,7 +16,7 @@ include:
       - 'prod-arm-deploy.yml'
 
 dev:kubernetes:
-  stage: dev:kubernetes:
+  stage: dev:kubernetes
   rules:
     - if: '$CI_COMMIT_BRANCH  == "dev"'
       variables:
