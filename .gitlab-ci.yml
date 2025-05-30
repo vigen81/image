@@ -25,10 +25,10 @@ dev:kubernetes:
     - when: never
 
 prod:build:
-    stage: prod:build
-    when: manual
-    only:
-       - main
+  stage: prod:build
+  when: manual
+  only:
+      - main
 
 prod:deploy:
   stage: deploy
