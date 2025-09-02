@@ -9,7 +9,7 @@ stages:
 
 include:
   - project: 'devops/templates'
-    ref: 'main'
+    ref: 'ec2'
     file:
       - 'dev-arm-ci.yml'
       - 'prod-arm-build.yml'
