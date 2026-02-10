@@ -1,32 +1,66 @@
 variables:
   HELM_PATH: helm/base/apps/smart-image/api
-  AWS_SECRET: /dev/smart-image
 
 stages:
-  - dev:kubernetes
-  - prod:build
-  - prod:deploy
+  - build
+  - migration
+  - deploy
 
 include:
   - project: 'devops/templates'
     ref: 'ec2'
     file:
-      - 'dev-arm-ci.yml'
-      - 'prod-arm-build.yml'
-      - 'prod-arm-deploy.yml'
+      - 'arm-build-ci.yml'
+      - 'arm-migration-ci.yml'
+      - 'arm-deploy-ci.yml'
 
-dev:kubernetes:
+build:
+  stage: build
+  rules:
+    - if: '$CI_COMMIT_BRANCH  == "dev"'
+      variables:
+        DOCKER_REPOSITORY: "$CI_PROJECT_NAME-dev"
+        AWS_SECRET: "/dev/smart-image"
+      when: always
+    - if: '$CI_COMMIT_BRANCH  == "main"'
+      variables:
+        DOCKER_REPOSITORY: "$CI_PROJECT_NAME"
+        AWS_SECRET: "/prod/smart-image"
+    - when: never
+
+dev:migration:
+  stage: migration
+  needs:
+    - build
+  rules:
+    - if: '$CI_COMMIT_BRANCH  == "dev"'
+      variables:
+        DOCKER_REPOSITORY: "$CI_PROJECT_NAME-dev"
+      when: always
+    - when: never
+
+dev:deploy:
+  stage: deploy
+  needs:
+    - dev:migration
   only:
-  - dev
+    - dev
 
-prod:build:
-    stage: prod:build
-    when: manual
-    only:
-       - main
+prod:migration:
+  stage: migration
+  needs:
+    - build
+  rules:
+    - if: '$CI_COMMIT_BRANCH  == "main"'
+      variables:
+        DOCKER_REPOSITORY: "$CI_PROJECT_NAME"
+      when: always
+    - when: never
 
 prod:deploy:
-    stage: prod:deploy
-    when: manual
-    only:
-       - main
+  stage: deploy
+  when: manual
+  needs:
+    - prod:migration
+  only:
+    - main
