@@ -39,9 +39,6 @@ func main() {
 			route.NewApp,
 			handler.NewResult,
 			middleware.NewAuthMiddleware,
-			func(cfg *config.Config, db *db.DB, p *processor.Processor, fs *fs.FS, log *logger.Logger) (*broker.Consumer, error) {
-				return broker.NewConsumer(cfg, db, p, fs, log)
-			},
 		),
 		fx.Invoke(
 			route.StartServer,
