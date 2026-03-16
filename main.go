@@ -2,6 +2,12 @@ package main
 
 import (
 	"context"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
 	"gitlab.smartbet.am/golang/smart-image/internal/service/broker"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/config"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/db"
@@ -12,11 +18,6 @@ import (
 	"gitlab.smartbet.am/golang/smart-image/internal/web/middleware"
 	"gitlab.smartbet.am/golang/smart-image/internal/web/route"
 	"go.uber.org/fx"
-	"log"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
 )
 
 var (
@@ -38,6 +39,9 @@ func main() {
 			route.NewApp,
 			handler.NewResult,
 			middleware.NewAuthMiddleware,
+			func(cfg *config.Config, db *db.DB, p *processor.Processor, fs *fs.FS, log *logger.Logger) (*broker.Consumer, error) {
+				return broker.NewConsumer(cfg, db, p, fs, log)
+			},
 		),
 		fx.Invoke(
 			route.StartServer,

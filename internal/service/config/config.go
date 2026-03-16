@@ -4,10 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
+	"strings"
+
 	"gitlab.smartbet.am/golang/smart-image/internal/plugin/ams"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/logger"
 	"go.uber.org/fx"
-	"os"
 )
 
 const mockConfig = `{
@@ -75,4 +77,12 @@ func Provider(lifecycle fx.Lifecycle, serviceName string, log *logger.Logger) *C
 	})
 	return c
 
+}
+
+func (c *Config) KafkaBrokers() []string {
+	brokers := strings.Split(c.KafkaBroker, ",")
+	for i := range brokers {
+		brokers[i] = strings.TrimSpace(brokers[i])
+	}
+	return brokers
 }
