@@ -1,0 +1,12 @@
+version: v2
+inputs:
+  - git_repo: ssh://git@gitlab.smartbet.am/common/api-schema.git
+    paths:
+      - proto/v1/smart-image
+plugins:
+  - local: protoc-gen-go
+    out: pb
+    opt: paths=source_relative
+  - local: protoc-gen-go-grpc
+    out: pb
+    opt: paths=source_relative
