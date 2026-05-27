@@ -16,7 +16,6 @@
 
 # don't commit the service binary to vcs
 imagix
-smart-image
 .env
 .idea.idea
 mysql_data
