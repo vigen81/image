@@ -14,10 +14,8 @@ import (
 	"github.com/ThreeDotsLabs/watermill-kafka/v3/pkg/kafka"
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/aws/aws-msk-iam-sasl-signer-go/signer"
-	"gitlab.smartbet.am/golang/smart-image/ent/image"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/config"
-	"gitlab.smartbet.am/golang/smart-image/internal/service/db"
-	"gitlab.smartbet.am/golang/smart-image/internal/service/fs"
+	srv "gitlab.smartbet.am/golang/smart-image/internal/service/image"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/logger"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/processor"
 	"go.uber.org/fx"
@@ -43,15 +41,13 @@ type Message struct {
 type Consumer struct {
 	config     *config.Config
 	subscriber message.Subscriber
-	processor  *processor.Processor
-	fs         *fs.FS
-	db         *db.DB
+	imgSrv     *srv.Service
 	logger     *logger.Logger
 	ctx        context.Context
 	cancel     context.CancelFunc
 }
 
-func NewConsumer(cfg *config.Config, db *db.DB, processor *processor.Processor, fs *fs.FS, log *logger.Logger) (*Consumer, error) {
+func NewConsumer(cfg *config.Config, subscriber message.Subscriber, imgSrv *srv.Service, log *logger.Logger) (*Consumer, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	// Verify broker connectivity first
@@ -96,9 +92,7 @@ func NewConsumer(cfg *config.Config, db *db.DB, processor *processor.Processor, 
 	return &Consumer{
 		config:     cfg,
 		subscriber: subscriber,
-		processor:  processor,
-		fs:         fs,
-		db:         db,
+		imgSrv:     imgSrv,
 		logger:     log,
 		ctx:        ctx,
 		cancel:     cancel,
@@ -160,59 +154,14 @@ func (c *Consumer) handleSave(msg *message.Message) {
 	}
 	c.logger.Info("Message received", "uuid", m.UUID)
 
-	info, err := c.db.Image.Query().Where(image.UUID(m.UUID)).First(c.ctx)
+	err := c.imgSrv.Process(c.ctx, srv.ProcessingRequest{
+		UUID:    m.UUID,
+		Service: m.Service,
+		Type:    m.Type,
+		ID:      m.ID,
+		Size:    m.Size,
+	})
 	if err != nil {
-		c.logger.Error("Error fetching image", "uuid", m.UUID, "error", err)
-		return
+		c.logger.Error("Error processing image via service", "uuid", m.UUID, "error", err)
 	}
-	if info.IsProceed {
-		c.logger.Info("Image already processed", "uuid", m.UUID)
-		return
-	}
-
-	imageRaw, err := c.fs.Read(info.TmpURL)
-	if err != nil {
-		c.logger.Error("Error reading image from S3", "tmp_url", info.TmpURL, "error", err)
-		return
-	}
-
-	var size *processor.Size
-	if m.Size != nil {
-		size = m.Size
-		imageRaw, err = c.processor.Process(
-			processor.WithImage(imageRaw),
-			processor.WithContentType(info.ContentType),
-			processor.WithOperations(processor.ResizeOperation(m.Size.Width, m.Size.Height)),
-		)
-		if err != nil {
-			c.logger.Error("Error processing image", "uuid", m.UUID, "error", err)
-			return
-		}
-	}
-
-	ext, err := processor.ReleaseExtension(info.ContentType)
-	if err != nil {
-		c.logger.Error("Error getting extension", "content_type", info.ContentType, "error", err)
-		return
-	}
-
-	url := fmt.Sprintf("/%s/%s/%s.%s", m.Service, m.Type, m.ID, ext)
-	if err := c.fs.Write(url, imageRaw, info.ContentType); err != nil {
-		c.logger.Error("Error writing image to S3", "url", url, "error", err)
-		return
-	}
-
-	if err := info.Update().
-		SetURL(url).
-		SetIsProceed(true).
-		SetService(m.Service).
-		SetType(m.Type).
-		SetObjectID(m.ID).
-		SetNillableSize(size).
-		Exec(c.ctx); err != nil {
-		c.logger.Error("Error updating image metadata", "uuid", m.UUID, "error", err)
-		return
-	}
-
-	c.logger.Info("Image processed successfully", "uuid", m.UUID, "url", url)
 }

@@ -5,12 +5,14 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"strings"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/db"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/fs"
+	"gitlab.smartbet.am/golang/smart-image/internal/service/image"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/processor"
-	"strings"
 )
 
 type UploadRequest struct {
@@ -25,6 +27,7 @@ type Result struct {
 	processor *processor.Processor
 	db        *db.DB
 	fs        *fs.FS
+	imgSrv    *image.Service
 }
 
 func (r *Result) Upload(c *fiber.Ctx) error {
@@ -120,10 +123,11 @@ func saveToDB(dbClient *db.DB, id, tmpPath, contentType string) error {
 		Exec(context.Background())
 }
 
-func NewResult(processor *processor.Processor, fs *fs.FS, db *db.DB) *Result {
+func NewResult(processor *processor.Processor, fs *fs.FS, db *db.DB, imgSrv *image.Service) *Result {
 	return &Result{
 		processor: processor,
 		db:        db,
 		fs:        fs,
+		imgSrv:    imgSrv,
 	}
 }

@@ -14,6 +14,7 @@ import (
 	"gitlab.smartbet.am/golang/smart-image/internal/service/fs"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/grpc"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/handler"
+	"gitlab.smartbet.am/golang/smart-image/internal/service/image"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/logger"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/processor"
 	"gitlab.smartbet.am/golang/smart-image/internal/web/middleware"
@@ -37,6 +38,7 @@ func main() {
 			db.Provider,
 			broker.NewConsumer,
 			fs.NewFS,
+			image.NewService,
 			route.NewApp,
 			handler.NewResult,
 			middleware.NewAuthMiddleware,
