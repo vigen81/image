@@ -12,6 +12,7 @@ import (
 	"gitlab.smartbet.am/golang/smart-image/internal/service/config"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/db"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/fs"
+	"gitlab.smartbet.am/golang/smart-image/internal/service/grpc"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/handler"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/logger"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/processor"
@@ -39,10 +40,12 @@ func main() {
 			route.NewApp,
 			handler.NewResult,
 			middleware.NewAuthMiddleware,
+			grpc.NewServer,
 		),
 		fx.Invoke(
 			route.StartServer,
 			broker.Start,
+			grpc.StartGRPCServer,
 		),
 	)
 
