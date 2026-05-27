@@ -3,6 +3,7 @@ inputs:
   - git_repo: ssh://git@gitlab.smartbet.am/common/api-schema.git
     paths:
       - proto/v1/smart-image
+      - proto/v1/smart-cms
 plugins:
   - local: protoc-gen-go
     out: pb

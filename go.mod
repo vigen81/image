@@ -1,6 +1,6 @@
 module gitlab.smartbet.am/golang/smart-image
 
-go 1.25.7
+go 1.26
 
 require (
 	entgo.io/ent v0.14.4
