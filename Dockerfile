@@ -6,14 +6,17 @@ WORKDIR /go/src/smart-image
 
 # Install dependencies
 #RUN apt --update --no-cache add ca-certificates gcc libtool make musl-dev protoc git
-RUN apt-get update && apt-get install -y \
-    ca-certificates \
-    gcc \
-    libtool \
-    make \
-    protobuf-compiler \
-    git && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk --update add make ca-certificates tzdata git bash
+
+
+ENV GOPRIVATE=gitlab.smartbet.am
+ENV GOSUMDB=off
+
+ARG GIT_MODULE_USER
+ARG GIT_MODULE_TOKEN
+
+RUN git config --global url."https://${GIT_MODULE_USER}:${GIT_MODULE_TOKEN}@gitlab.smartbet.am/".insteadOf "https://gitlab.smartbet.am/"
+
 
 
 RUN git config --global url."https://${GIT_MODULE_USER}:${GIT_MODULE_TOKEN}@gitlab.smartbet.am/".insteadOf "https://gitlab.smartbet.am/"
