@@ -1,0 +1,5 @@
+get "gitlab.smartbet.am/golang/sdk/connector": found meta tag vcs.metaImport{Prefix:"gitlab.smartbet.am/golang/sdk", VCS:"git", RepoRoot:"https://gitlab.smartbet.am/golang/sdk.git", SubDir:""} at //gitlab.smartbet.am/golang/sdk/connector?go-get=1
+get "gitlab.smartbet.am/golang/sdk/connector": verifying non-authoritative meta tag
+get "gitlab.smartbet.am/golang/sdk": found meta tag vcs.metaImport{Prefix:"gitlab.smartbet.am/golang/sdk", VCS:"git", RepoRoot:"https://gitlab.smartbet.am/golang/sdk.git", SubDir:""} at //gitlab.smartbet.am/golang/sdk?go-get=1
+gitlab.smartbet.am/golang/sdk@v0.0.0-20260512071303-1e3c318ae974: verifying module: gitlab.smartbet.am/golang/sdk@v0.0.0-20260512071303-1e3c318ae974: reading https://sum.golang.org/lookup/gitlab.smartbet.am/golang/sdk@v0.0.0-20260512071303-1e3c318ae974: 404 Not Found
+	server response: not found: gitlab.smartbet.am/golang/sdk@v0.0.0-20260512071303-1e3c318ae974: unrecognized import path "gitlab.smartbet.am/golang/sdk": https fetch: Get "https://gitlab.smartbet.am/golang/sdk?go-get=1": dial tcp 63.176.224.151:443: i/o timeout
