@@ -47,7 +47,7 @@ type Consumer struct {
 	cancel     context.CancelFunc
 }
 
-func NewConsumer(cfg *config.Config, subscriber message.Subscriber, imgSrv *srv.Service, log *logger.Logger) (*Consumer, error) {
+func NewConsumer(cfg *config.Config, imgSrv *srv.Service, log *logger.Logger) (*Consumer, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	// Verify broker connectivity first
