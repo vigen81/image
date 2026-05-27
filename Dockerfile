@@ -1,11 +1,6 @@
-FROM 499144353299.dkr.ecr.eu-central-1.amazonaws.com/docker-hub/library/golang:1.26 AS builder
+FROM 499144353299.dkr.ecr.eu-central-1.amazonaws.com/docker-hub/library/golang:1.26-alpine AS build
 
-# Set Go env
-ENV CGO_ENABLED=0 GOOS=linux
-WORKDIR /go/src/smart-image
-
-# Install dependencies
-#RUN apt --update --no-cache add ca-certificates gcc libtool make musl-dev protoc git
+WORKDIR /build
 RUN apk --update add make ca-certificates tzdata git bash
 
 
@@ -17,21 +12,20 @@ ARG GIT_MODULE_TOKEN
 
 RUN git config --global url."https://${GIT_MODULE_USER}:${GIT_MODULE_TOKEN}@gitlab.smartbet.am/".insteadOf "https://gitlab.smartbet.am/"
 
+COPY ./go.mod /build/go.mod
+COPY ./go.sum /build/go.sum
 
-
-RUN git config --global url."https://${GIT_MODULE_USER}:${GIT_MODULE_TOKEN}@gitlab.smartbet.am/".insteadOf "https://gitlab.smartbet.am/"
-
-
-# Build Go binary
-COPY Makefile go.mod go.sum ./
 RUN go mod download
+
 COPY . .
-RUN make deps
-RUN make build
 
-# Deployment container
+RUN go build -o app
+
 FROM scratch
+COPY --from=build /usr/share/zoneinfo /usr/share/zoneinfo
+COPY --from=build /etc/ssl/certs /etc/ssl/certs
+COPY --from=build /build/app /app
+COPY --from=build /build/docs /docs
 
-COPY --from=builder /etc/ssl/certs /etc/ssl/certs
-COPY --from=builder /go/src/smart-image/app /app
 ENTRYPOINT ["/app"]
+
