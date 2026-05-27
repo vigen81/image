@@ -25,7 +25,6 @@ FROM scratch
 COPY --from=build /usr/share/zoneinfo /usr/share/zoneinfo
 COPY --from=build /etc/ssl/certs /etc/ssl/certs
 COPY --from=build /build/app /app
-COPY --from=build /build/docs /docs
 
 ENTRYPOINT ["/app"]
 
