@@ -14,7 +14,11 @@ RUN apt-get update && apt-get install -y \
     protobuf-compiler \
     git && \
     rm -rf /var/lib/apt/lists/*
-    
+
+
+RUN git config --global url."https://${GIT_MODULE_USER}:${GIT_MODULE_TOKEN}@gitlab.smartbet.am/".insteadOf "https://gitlab.smartbet.am/"
+
+
 # Build Go binary
 COPY Makefile go.mod go.sum ./
 RUN go mod download
