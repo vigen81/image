@@ -149,10 +149,10 @@ func (c *Consumer) handleSave(msg *message.Message) {
 
 	var m Message
 	if err := json.Unmarshal(msg.Payload, &m); err != nil {
-		c.logger.Error("Error unmarshalling message", "error", err)
+		c.logger.Error("Error unmarshalling message ", "error ", err)
 		return
 	}
-	c.logger.Info("Message received", "uuid", m.UUID)
+	c.logger.Info("Message received ", "uuid ", m.UUID)
 
 	err := c.imgSrv.Process(c.ctx, srv.ProcessingRequest{
 		UUID:    m.UUID,
@@ -162,6 +162,6 @@ func (c *Consumer) handleSave(msg *message.Message) {
 		Size:    m.Size,
 	})
 	if err != nil {
-		c.logger.Error("Error processing image via service", "uuid", m.UUID, "error", err)
+		c.logger.Error("Error processing image via service ", "uuid ", m.UUID, "error ", err)
 	}
 }

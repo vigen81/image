@@ -9,9 +9,12 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	"gitlab.smartbet.am/golang/smart-image/ent"
+	entimage "gitlab.smartbet.am/golang/smart-image/ent/image"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/db"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/fs"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/image"
+	"gitlab.smartbet.am/golang/smart-image/internal/service/logger"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/processor"
 )
 
@@ -28,6 +31,7 @@ type Result struct {
 	db        *db.DB
 	fs        *fs.FS
 	imgSrv    *image.Service
+	logger    *logger.Logger
 }
 
 func (r *Result) Upload(c *fiber.Ctx) error {
@@ -57,11 +61,19 @@ func (r *Result) Upload(c *fiber.Ctx) error {
 		return err
 	}
 
-	if err := saveToDB(r.db, id, tmpPath, contentType); err != nil {
-		// Rollback filesystem on DB error
+	node, err := saveToDB(r.db, id, tmpPath, contentType)
+	if err != nil {
 		_ = r.fs.NewOperation(fs.WithFilename(tmpPath)).Delete()
 		return err
 	}
+
+	ctx := c.UserContext()
+	r.logger.Info("inserted", "id", node.ID, "uuid", id, "where", r.db.Probe(ctx))
+
+	// read-back on the same client
+	back, rerr := r.db.Image.Query().Where(entimage.UUID(id)).Only(ctx)
+	r.logger.Info("readback", "uuid", id, "found", rerr == nil, "err", rerr, "where", r.db.Probe(ctx))
+	_ = back
 
 	return c.Status(fiber.StatusOK).JSON(UploadResponse{UUID: id, URL: tmpPath})
 }
@@ -115,12 +127,10 @@ func saveToFS(fsClient *fs.FS, path string, data []byte, contentType string) err
 	).Write()
 }
 
-func saveToDB(dbClient *db.DB, id, tmpPath, contentType string) error {
+func saveToDB(dbClient *db.DB, id, tmpPath, contentType string) (*ent.Image, error) {
 	return dbClient.Image.Create().
-		SetTmpURL(tmpPath).
-		SetUUID(id).
-		SetContentType(contentType).
-		Exec(context.Background())
+		SetTmpURL(tmpPath).SetUUID(id).SetContentType(contentType).
+		Save(context.Background())
 }
 
 func NewResult(processor *processor.Processor, fs *fs.FS, db *db.DB, imgSrv *image.Service) *Result {

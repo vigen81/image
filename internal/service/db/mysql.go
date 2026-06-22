@@ -4,10 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strconv"
+
 	"gitlab.smartbet.am/golang/smart-image/ent"
 	"gitlab.smartbet.am/golang/smart-image/ent/migrate"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/config"
-	"strconv"
 
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
@@ -28,6 +29,7 @@ type configData struct {
 type DB struct {
 	*ent.Client
 	config *config.Config
+	raw    *sql.DB
 }
 
 func NewDB(c *config.Config) *DB {
@@ -50,6 +52,18 @@ func (db *DB) TX(handler func(tx *ent.Tx) error) error {
 	return tx.Commit()
 
 }
+
+func (db *DB) Probe(ctx context.Context) string {
+	var host, name string
+	var readOnly, connID int
+	if err := db.raw.QueryRowContext(ctx,
+		"SELECT @@hostname, DATABASE(), @@read_only, CONNECTION_ID()").
+		Scan(&host, &name, &readOnly, &connID); err != nil {
+		return "probe_err=" + err.Error()
+	}
+	return fmt.Sprintf("host=%s db=%s read_only=%d conn_id=%d", host, name, readOnly, connID)
+}
+
 func (db *DB) connect(ctx context.Context) error {
 	portStr := db.config.DBPort
 	port, err := strconv.Atoi(portStr)
@@ -77,6 +91,7 @@ func (db *DB) connect(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	db.raw = con
 
 	drv := entsql.OpenDB(dialect.MySQL, con)
 	db.Client = ent.NewClient(ent.Driver(drv)).Debug()

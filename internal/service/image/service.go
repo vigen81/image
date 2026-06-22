@@ -36,9 +36,10 @@ func NewService(db *db.DB, processor *processor.Processor, fs *fs.FS, log *logge
 }
 
 func (s *Service) Process(ctx context.Context, req ProcessingRequest) error {
+	s.logger.Info("process probe", "uuid", req.UUID, "where", s.db.Probe(ctx))
 	info, err := s.db.Image.Query().Where(image.UUID(req.UUID)).First(ctx)
 	if err != nil {
-		s.logger.Error("Error fetching image", "uuid", req.UUID, "error", err)
+		s.logger.Error("Error fetching image", "uuid ", req.UUID, "error ", err)
 		return err
 	}
 	if info.IsProceed {
