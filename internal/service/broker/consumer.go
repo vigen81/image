@@ -145,14 +145,15 @@ func (c *Consumer) start() {
 }
 
 func (c *Consumer) handleSave(msg *message.Message) {
-	defer msg.Ack() // Ack even on error to avoid infinite redelivery; use Nack() if you want retry
-
 	var m Message
 	if err := json.Unmarshal(msg.Payload, &m); err != nil {
-		c.logger.Error("Error unmarshalling message ", "error ", err)
+		// Malformed payload will never succeed — drop it.
+		c.logger.Error("Error unmarshalling message", "error", err)
+		msg.Ack()
 		return
 	}
-	c.logger.Info("Message received ", "uuid ", m.UUID)
+
+	c.logger.Info("Message received", "uuid", m.UUID)
 
 	err := c.imgSrv.Process(c.ctx, srv.ProcessingRequest{
 		UUID:    m.UUID,
@@ -162,6 +163,11 @@ func (c *Consumer) handleSave(msg *message.Message) {
 		Size:    m.Size,
 	})
 	if err != nil {
-		c.logger.Error("Error processing image via service ", "uuid ", m.UUID, "error ", err)
+		// Transient (incl. stale-connection miss) — redeliver instead of dropping.
+		c.logger.Error("Error processing image via service", "uuid", m.UUID, "error", err)
+		msg.Nack()
+		return
 	}
+
+	msg.Ack()
 }
