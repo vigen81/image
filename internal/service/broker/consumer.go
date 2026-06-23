@@ -14,6 +14,7 @@ import (
 	"github.com/ThreeDotsLabs/watermill-kafka/v3/pkg/kafka"
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/aws/aws-msk-iam-sasl-signer-go/signer"
+	"gitlab.smartbet.am/golang/smart-image/ent"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/config"
 	srv "gitlab.smartbet.am/golang/smart-image/internal/service/image"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/logger"
@@ -147,27 +148,27 @@ func (c *Consumer) start() {
 func (c *Consumer) handleSave(msg *message.Message) {
 	var m Message
 	if err := json.Unmarshal(msg.Payload, &m); err != nil {
-		// Malformed payload will never succeed — drop it.
 		c.logger.Error("Error unmarshalling message", "error", err)
-		msg.Ack()
+		msg.Ack() // malformed, never retryable
 		return
 	}
 
 	c.logger.Info("Message received", "uuid", m.UUID)
 
 	err := c.imgSrv.Process(c.ctx, srv.ProcessingRequest{
-		UUID:    m.UUID,
-		Service: m.Service,
-		Type:    m.Type,
-		ID:      m.ID,
-		Size:    m.Size,
+		UUID: m.UUID, Service: m.Service, Type: m.Type, ID: m.ID, Size: m.Size,
 	})
 	if err != nil {
-		// Transient (incl. stale-connection miss) — redeliver instead of dropping.
+		if ent.IsNotFound(err) {
+			// Row isn't there and won't appear by retrying — drop, don't loop.
+			c.logger.Error("image row missing, dropping message", "uuid", m.UUID)
+			msg.Ack()
+			return
+		}
+		// Genuine transient (connection, imaginary, S3) — redeliver.
 		c.logger.Error("Error processing image via service", "uuid", m.UUID, "error", err)
 		msg.Nack()
 		return
 	}
-
 	msg.Ack()
 }
