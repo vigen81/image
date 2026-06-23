@@ -67,7 +67,7 @@ func (r *Result) Upload(c *fiber.Ctx) error {
 		return err
 	}
 
-	ctx := c.UserContext()
+	ctx := context.Background()
 	r.logger.Info("inserted", "id", node.ID, "uuid", id, "where", r.db.Probe(ctx))
 
 	// read-back on the same client
