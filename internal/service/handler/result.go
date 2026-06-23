@@ -133,11 +133,12 @@ func saveToDB(dbClient *db.DB, id, tmpPath, contentType string) (*ent.Image, err
 		Save(context.Background())
 }
 
-func NewResult(processor *processor.Processor, fs *fs.FS, db *db.DB, imgSrv *image.Service) *Result {
+func NewResult(processor *processor.Processor, fs *fs.FS, db *db.DB, imgSrv *image.Service, log *logger.Logger) *Result {
 	return &Result{
 		processor: processor,
 		db:        db,
 		fs:        fs,
 		imgSrv:    imgSrv,
+		logger:    log,
 	}
 }
