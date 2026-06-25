@@ -9,7 +9,7 @@
     "host": "localhost:8080",
     "basePath": "/api/v1",
     "paths": {
-        "/upload": {
+        "/bo/api/v1/upload": {
             "post": {
                 "description": "Accepts a base64 data URL, processes it (webp conversion/resize), stores it, and returns its UUID.",
                 "consumes": [

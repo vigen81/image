@@ -19,7 +19,7 @@ info:
   title: Smart Image API
   version: "1.0"
 paths:
-  /upload:
+  /bo/api/v1/upload:
     post:
       consumes:
       - application/json

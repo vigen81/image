@@ -44,7 +44,7 @@ type Result struct {
 // @Success      200      {object}  UploadResponse
 // @Failure      400      {object}  map[string]string
 // @Failure      500      {object}  map[string]string
-// @Router       /upload  [post]
+// @Router       /bo/api/v1/upload  [post]
 func (r *Result) Upload(c *fiber.Ctx) error {
 	var req UploadRequest
 	if err := c.BodyParser(&req); err != nil {

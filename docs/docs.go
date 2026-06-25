@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/upload": {
+        "/bo/api/v1/upload": {
             "post": {
                 "description": "Accepts a base64 data URL, processes it (webp conversion/resize), stores it, and returns its UUID.",
                 "consumes": [
