@@ -25,10 +25,9 @@ func NewApp(result *handler.Result, authMiddleware *middleware.AuthMiddleware) *
 
 	app.Use(cors.New())
 
-	app.Get("/swagger/*", swagger.HandlerDefault)
-
 	api := app.Group("/api")
 	v1 := api.Group("/v1")
+	v1.Get("/swagger/*", swagger.HandlerDefault)
 	//v1.Use(authMiddleware.Handle)
 	v1.Post("/upload", result.Upload)
 
