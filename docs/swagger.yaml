@@ -1,0 +1,57 @@
+basePath: /api/v1
+definitions:
+  handler.UploadRequest:
+    properties:
+      file:
+        type: string
+    type: object
+  handler.UploadResponse:
+    properties:
+      url:
+        type: string
+      uuid:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Image upload and processing service.
+  title: Smart Image API
+  version: "1.0"
+paths:
+  /upload:
+    post:
+      consumes:
+      - application/json
+      description: Accepts a base64 data URL, processes it (webp conversion/resize),
+        stores it, and returns its UUID.
+      parameters:
+      - description: Upload payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.UploadRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.UploadResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Upload an image
+      tags:
+      - images
+swagger: "2.0"
