@@ -34,6 +34,17 @@ type Result struct {
 	logger    *logger.Logger
 }
 
+// Upload godoc
+// @Summary      Upload an image
+// @Description  Accepts a base64 data URL, processes it (webp conversion/resize), stores it, and returns its UUID.
+// @Tags         images
+// @Accept       json
+// @Produce      json
+// @Param        request  body      UploadRequest   true  "Upload payload"
+// @Success      200      {object}  UploadResponse
+// @Failure      400      {object}  map[string]string
+// @Failure      500      {object}  map[string]string
+// @Router       /upload  [post]
 func (r *Result) Upload(c *fiber.Ctx) error {
 	var req UploadRequest
 	if err := c.BodyParser(&req); err != nil {

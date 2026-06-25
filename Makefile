@@ -14,8 +14,7 @@ deps:
 
 .PHONY: swag
 swag:
-	swag init -g ./internal/app/app.go -o docs/swagger --parseDepth 10 --parseDependency --parseInternal \
-		--outputTypes go,json --parseGoList false --propertyStrategy camelcase --pd true -d ./internal
+	swag init -g main.go --output docs --parseDependency --parseInternal
 build:
 	go build -o app
 

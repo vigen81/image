@@ -5,6 +5,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/swagger"
+	_ "gitlab.smartbet.am/golang/smart-image/docs"
 	"gitlab.smartbet.am/golang/smart-image/internal/service/handler"
 	"gitlab.smartbet.am/golang/smart-image/internal/web/middleware"
 	"go.uber.org/fx"
@@ -22,6 +24,8 @@ func NewApp(result *handler.Result, authMiddleware *middleware.AuthMiddleware) *
 	app.Static("/", "./static")
 
 	app.Use(cors.New())
+
+	app.Get("/swagger/*", swagger.HandlerDefault)
 
 	api := app.Group("/api")
 	v1 := api.Group("/v1")

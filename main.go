@@ -27,6 +27,11 @@ var (
 	version     = "latest"
 )
 
+// @title           Smart Image API
+// @version         1.0
+// @description     Image upload and processing service.
+// @host            localhost:8080
+// @BasePath        /api/v1
 func main() {
 
 	app := fx.New(
