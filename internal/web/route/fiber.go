@@ -29,7 +29,8 @@ func NewApp(result *handler.Result, authMiddleware *middleware.AuthMiddleware) *
 	v1 := api.Group("/v1")
 	v1.Get("/swagger/*", swagger.HandlerDefault)
 	//v1.Use(authMiddleware.Handle)
-	v1.Post("/upload", result.Upload)
+	boV1 := app.Group("/bo/api/v1")
+	boV1.Post("/upload", result.Upload)
 
 	return app
 }
