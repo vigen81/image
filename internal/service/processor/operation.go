@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+
 	"github.com/go-resty/resty/v2"
 )
 
@@ -41,9 +42,64 @@ type (
 )
 
 const (
-	TypeResize  OperationType = "resize"
-	TypeConvert OperationType = "convert"
+	TypeResize    OperationType = "resize"
+	TypeConvert   OperationType = "convert"
+	TypeCrop      OperationType = "crop"
+	TypeSmartCrop OperationType = "smartcrop"
 )
+
+type Gravity string
+
+const (
+	GravityCentre Gravity = "centre"
+	GravityNorth  Gravity = "north"
+	GravitySouth  Gravity = "south"
+	GravityWest   Gravity = "west"
+	GravityEast   Gravity = "east"
+	GravitySmart  Gravity = "smart"
+)
+
+type cropOperation struct {
+	Width   int     `json:"width,omitempty"`
+	Height  int     `json:"height,omitempty"`
+	Gravity Gravity `json:"gravity,omitempty"`
+}
+
+func (c *cropOperation) Operation() OperationType { return TypeCrop }
+
+func (c *cropOperation) GetData() OperationData {
+	return OperationData{
+		Operation: string(TypeCrop),
+		Params:    c,
+	}
+}
+
+func CropOperation(width, height int, gravity ...Gravity) Operation {
+	op := &cropOperation{Width: width, Height: height, Gravity: GravityCentre}
+	if len(gravity) > 0 {
+		op.Gravity = gravity[0]
+	}
+	return op
+}
+
+// smartcrop = same as crop but content-aware gravity; best default for banners
+type smartCropOperation struct {
+	Width  int `json:"width,omitempty"`
+	Height int `json:"height,omitempty"`
+}
+
+func (s *smartCropOperation) Operation() OperationType { return TypeSmartCrop }
+
+func (s *smartCropOperation) GetData() OperationData {
+	return OperationData{
+		Operation: string(TypeSmartCrop),
+		Params:    s,
+	}
+}
+
+func SmartCropOperation(width, height int) Operation {
+	return &smartCropOperation{Width: width, Height: height}
+}
 
 func (r *resizeOperation) GetData() OperationData {
 	return OperationData{
