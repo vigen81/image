@@ -13,11 +13,11 @@ import (
 )
 
 const mockConfig = `{
-	"db_host": "dev-aurora-cluster.cluster-cj1393vjusxp.eu-central-1.rds.amazonaws.com",
-    "db_user": "privatedbuser",
-	"db_password": "tRgtVF6TgZXGm6ZK",
-	"db_port": "3306",
-	"db_name": "smart-image",
+"db_port": "3306",
+	"db_host": "localhost",
+	"db_user": "root",
+	"db_password": "123456!",
+	"db_name": "smart_image",
 	"api_key": "mock-secret-key",
 	"kafka_topic": "smart_image",
 	"kafka_broker": "localhost:9094",
